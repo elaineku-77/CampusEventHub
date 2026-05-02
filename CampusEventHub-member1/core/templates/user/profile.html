@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile | CampusEventHub{% endblock %}
+
+{% block content %}
+<section class="profile-page">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="profile-card h-100">
+                    <div class="profile-header d-flex align-items-center gap-4">
+                        {% if profile_user.profile_picture %}
+                            <img class="profile-avatar" src="{{ profile_user.profile_picture.url }}" alt="{{ profile_user.full_name }} profile picture">
+                        {% else %}
+                            <div class="avatar-placeholder">{{ profile_user.full_name|first|upper }}</div>
+                        {% endif %}
+                        <div>
+                            <h1 class="h3 fw-bold mb-1">{{ profile_user.full_name }}</h1>
+                            <div class="small opacity-75">Joined {{ profile_user.date_joined|date:'d M Y' }}</div>
+                        </div>
+                    </div>
+                    <div class="profile-body">
+                        <h2 class="h5 fw-bold mb-3">Account Information</h2>
+                        <table class="table profile-table align-middle mb-0">
+                            <tr><th>Full Name</th><td>{{ profile_user.full_name }}</td></tr>
+                            <tr><th>Email</th><td>{{ profile_user.email }}</td></tr>
+                            <tr><th>Phone</th><td>{{ profile_user.phone_number|default:'Not provided' }}</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+<div class="col-lg-7">
+    <div class="profile-card">
+        <div class="profile-body">
+            <ul class="nav nav-tabs profile-tabs mb-4" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button
+                        class="nav-link {% if active_tab == 'profile' %}active{% endif %}"
+                        id="profile-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#profile-panel"
+                        type="button"
+                        role="tab"
+                        aria-controls="profile-panel"
+                        aria-selected="{% if active_tab == 'profile' %}true{% else %}false{% endif %}"
+        >
+                        Update Profile
+                    </button>
+                </li>
+
+                <li class="nav-item" role="presentation">
+                <button
+                    class="nav-link {% if active_tab == 'password' %}active{% endif %}"
+                    id="password-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#password-panel"
+                    type="button"
+                    role="tab"
+                    aria-controls="password-panel"
+                    aria-selected="{% if active_tab == 'password' %}true{% else %}false{% endif %}"
+                >
+                        Update Password
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- Update Profile Tab -->
+                <div
+                    class="tab-pane fade {% if active_tab == 'profile' %}show active{% endif %}"
+                    id="profile-panel"
+                    role="tabpanel"
+                    aria-labelledby="profile-tab"
+                >
+                    <h2 class="h4 fw-bold mb-2">Update Profile</h2>
+                    <p class="profile-meta mb-4">
+
+                    </p>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="profile">
+
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.full_name.id_for_label }}">Full Name</label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}
+                                <ul class="auth-error-list">{{ form.full_name.errors }}</ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}
+                                <ul class="auth-error-list">{{ form.phone_number.errors }}</ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4 profile-picture-upload-field">
+                            <label class="form-label" for="{{ form.profile_picture.id_for_label }}">Profile Picture</label>
+                            {{ form.profile_picture }}
+
+                        {% if profile_user.profile_picture %}
+                            <div class="form-check mt-2">
+                                {{ form.remove_profile_picture }}
+                                <label class="form-check-label" for="{{ form.remove_profile_picture.id_for_label }}">
+                                    Remove profile picture
+                                </label>
+                            </div>
+                        {% endif %}
+
+                            {% if form.profile_picture.errors %}
+                                <ul class="auth-error-list">{{ form.profile_picture.errors }}</ul>
+                            {% endif %}
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-auth-primary"
+                            style="width:auto; padding-left:42px; padding-right:42px;"
+                        >
+                            Save My Profile
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Update Password Tab -->
+                <div
+                    class="tab-pane fade {% if active_tab == 'password' %}show active{% endif %}"
+                    id="password-panel"
+                    role="tabpanel"
+                    aria-labelledby="password-tab"
+                >
+                    <h2 class="h4 fw-bold mb-2">Update Password</h2>
+                    <p class="profile-meta mb-4">
+                        Enter your current password before setting a new password.
+                    </p>
+
+                    {% if password_form.non_field_errors %}
+                        <div class="alert alert-danger">{{ password_form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="password">
+
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ password_form.current_password.id_for_label }}">
+                                Current Password
+                            </label>
+                            {{ password_form.current_password }}
+                            {% if password_form.current_password.errors %}
+                                <ul class="auth-error-list">{{ password_form.current_password.errors }}</ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ password_form.new_password.id_for_label }}">
+                                New Password
+                            </label>
+                            {{ password_form.new_password }}
+                            {% if password_form.new_password.help_text %}
+                                <div class="form-text">{{ password_form.new_password.help_text }}</div>
+                            {% endif %}
+                            {% if password_form.new_password.errors %}
+                                <ul class="auth-error-list">{{ password_form.new_password.errors }}</ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="{{ password_form.confirm_password.id_for_label }}">
+                                Confirm New Password
+                            </label>
+                            {{ password_form.confirm_password }}
+                            {% if password_form.confirm_password.errors %}
+                                <ul class="auth-error-list">{{ password_form.confirm_password.errors }}</ul>
+                            {% endif %}
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-auth-primary"
+                            style="width:auto; padding-left:42px; padding-right:42px;"
+                        >
+                            Save Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
