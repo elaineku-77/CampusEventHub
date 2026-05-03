@@ -1,13 +1,11 @@
 # Member 1 — Authentication & User Profile (Irene)
 
-## Completed pages
-- `/register/` — user registration
-- `/login/` — user login
-- `/logout/` — user logout
-- `/forgot-password/` — user forgot password
-- `/profile/` — profile viewing/update
-- `/admin-login/` — fixed admin login
-- `/admin-logout/` — admin logout
+## Completed
+- user registration
+- user login/logout
+- user forgot password
+- profile viewing/update
+- admin login/logout (one admin acc)
 
 ## Implemented Remarks
 - Registration must validate that the same email cannot be used twice. 
