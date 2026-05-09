@@ -1,0 +1,88 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container form-page">
+    <div class="card shadow-sm mx-auto" style="max-width: 850px;">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">{{ title }}</h3>
+        </div>
+
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Event Title</label>
+                    {{ form.title }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    {{ form.category }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Event Date</label>
+                        {{ form.event_date }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Event Time</label>
+                        {{ form.event_time }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Venue</label>
+                    {{ form.venue }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Maximum Participants</label>
+                    {{ form.max_participants }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    {{ form.status }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Event Image</label>
+                    {{ form.event_image }}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'admin_event_list' %}" class="btn btn-secondary">Back</a>
+                    <button type="submit" class="btn btn-success">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-page {
+    padding-top: 30px;
+    padding-bottom: 60px;
+}
+
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.form-label {
+    font-weight: 600;
+}
+</style>
+
+{% endblock %}
