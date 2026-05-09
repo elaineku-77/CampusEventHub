@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register | CampusEventHub{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-shell">
+        <aside class="auth-panel-left">
+            <div class="auth-brand">CampusEventHub</div>
+            <div class="auth-copy">
+                <h1>Discover UM events.<br><br>Sign up for more events today!</h1>
+                <p></p>
+
+            </div>
+            <div class="auth-um-card">
+                <img src="{% static 'images/umlogin.png' %}" alt="University of Malaya campus">
+            </div>
+
+        </aside>
+
+        <main class="auth-panel-right">
+            <div class="auth-form-wrap">
+                <h1 class="auth-title">Sign Up</h1>
+
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.full_name.id_for_label }}">Full Name</label>
+                        {{ form.full_name }}
+                        {% if form.full_name.errors %}<ul class="auth-error-list">{{ form.full_name.errors }}</ul>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.email.id_for_label }}">E-mail Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}<ul class="auth-error-list">{{ form.email.errors }}</ul>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}<ul class="auth-error-list">{{ form.phone_number.errors }}</ul>{% endif %}
+                    </div>
+
+                    <div class="mb-4
+                     profile-picture-upload-field">
+                        <label class="form-label" for="{{ form.profile_picture.id_for_label }}">Profile Picture</label>
+                        {{ form.profile_picture }}
+                        {% if form.profile_picture.errors %}<ul class="auth-error-list">{{ form.profile_picture.errors }}</ul>{% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+                            <div class="password-input-wrap">
+                                {{ form.password }}
+                                <button type="button" class="password-toggle" data-password-toggle="{{ form.password.id_for_label }}" aria-label="Show password">👁</button>
+                            </div>
+                            <div class="auth-help">Minimum 8 characters.</div>
+                            {% if form.password.errors %}<ul class="auth-error-list">{{ form.password.errors }}</ul>{% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="{{ form.confirm_password.id_for_label }}">Confirm Password</label>
+                            {{ form.confirm_password }}
+                            {% if form.confirm_password.errors %}<ul class="auth-error-list">{{ form.confirm_password.errors }}</ul>{% endif %}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-auth-primary">Create Account</button>
+                </form>
+
+                <div class="auth-links">
+                    <div>Already have an account? <a href="{% url 'login' %}">Log In</a></div>
+                </div>
+            </div>
+        </main>
+    </div>
+</section>
+{% endblock %}
