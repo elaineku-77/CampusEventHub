@@ -11,162 +11,239 @@
         <h2>Don’t miss out!</h2>
         <h3>Your Gateway to UM’s Vibrant Event Scene.</h3>
 
-        <div class="search-box">
-            <input type="text" placeholder="Search Events, Categories...">
-        </div>
+        <form class="search-box" method="get" action="{% url 'event_list' %}">
+            <input type="text" name="q" placeholder="Search Events, Categories...">
+        </form>
     </div>
 </section>
 
 <!-- CATEGORY SECTION -->
 <section class="container mt-5">
-    <h4 class="fw-bold mb-4">Explore Categories</h4>
+    <h4 class="fw-bold mb-4 section-heading">Explore Categories</h4>
 
     <div class="d-flex justify-content-between text-center flex-wrap gap-3">
-        <div class="category">
+        <a href="{% url 'event_list' %}?category=Workshop" class="category">
             <img src="{% static 'images/workshop.jpg' %}" alt="Workshop">
             <p>Workshop</p>
-        </div>
+        </a>
 
-        <div class="category">
+        <a href="{% url 'event_list' %}?category=Seminar" class="category">
             <img src="{% static 'images/seminar.jpg' %}" alt="Seminar">
             <p>Seminar</p>
-        </div>
+        </a>
 
-        <div class="category">
+        <a href="{% url 'event_list' %}?category=Social" class="category">
             <img src="{% static 'images/social.jpg' %}" alt="Social">
             <p>Social</p>
-        </div>
+        </a>
 
-        <div class="category">
+        <a href="{% url 'event_list' %}?category=Sports" class="category">
             <img src="{% static 'images/sports.jpg' %}" alt="Sports">
             <p>Sports & Fitness</p>
-        </div>
+        </a>
 
-        <div class="category">
+        <a href="{% url 'event_list' %}?category=Technology" class="category">
             <img src="{% static 'images/tech.jpg' %}" alt="Technology">
-            <p>Technology</p>
-        </div>
+            <p>Technology & Innovation</p>
+        </a>
 
-        <div class="category">
+        <a href="{% url 'event_list' %}?category=Arts" class="category">
             <img src="{% static 'images/art.jpg' %}" alt="Arts">
             <p>Arts</p>
-        </div>
+        </a>
     </div>
 </section>
 
-<!-- EVENTS SECTION -->
+<!-- DISCOVER EVENTS SECTION -->
 <section class="container mt-5">
-    <h4 class="fw-bold mb-4">Discover Events in UM</h4>
+    <h4 class="fw-bold mb-4 section-heading">Discover Events in UM</h4>
 
-    <div class="row">
+    {% if latest_events %}
+        <div class="row g-4 align-items-stretch">
 
-        <!-- EVENT 1 -->
-        <div class="col-md-4 mb-4">
-            <div class="card event-card">
-                <div class="event-img-wrapper">
-                    <img src="{% static 'images/event1.jpg' %}" class="card-img-top" alt="AI Workshop">
-                    <span class="status-badge status-open">Open</span>
+            {% for event in latest_events %}
+                <div class="col-lg-4 col-md-6 d-flex">
+                    <a href="{% url 'event_detail' event.id %}" class="event-card-link">
+                        <div class="event-card-v2">
+
+                            <div class="event-card-image-wrap">
+                                {% if event.event_image %}
+                                    <img src="{{ event.event_image.url }}" class="event-card-image" alt="{{ event.title }}">
+                                {% else %}
+                                    <img src="{% static 'images/um.png' %}" class="event-card-image" alt="{{ event.title }}">
+                                {% endif %}
+                            </div>
+
+                            <div class="event-card-content">
+
+                                <div class="event-chip-row">
+                                    <span class="event-chip chip-category">
+                                        {{ event.category }}
+                                    </span>
+
+                                    {% if event.availability_class == "open" %}
+                                        <span class="event-chip chip-open">Open</span>
+                                    {% elif event.availability_class == "limited" %}
+                                        <span class="event-chip chip-limited">Few Seats</span>
+                                    {% elif event.availability_class == "full" %}
+                                        <span class="event-chip chip-full">Full</span>
+                                    {% else %}
+                                        <span class="event-chip chip-full">Closed</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="event-main-row">
+                                    <div class="event-date-box">
+                                        <span>{{ event.event_date|date:"M" }}</span>
+                                        <strong>{{ event.event_date|date:"d" }}</strong>
+                                    </div>
+
+                                    <div class="event-main-info">
+                                        <h5 class="event-title">{{ event.title }}</h5>
+
+                                        <p class="event-time-text">
+                                            <i class="bi bi-clock"></i>
+                                            {{ event.event_time|time:"g:i A" }}
+                                        </p>
+
+                                        <p class="event-venue-text">
+                                            <i class="bi bi-geo-alt"></i>
+                                            {{ event.venue }}
+                                        </p>
+
+                                        <p class="event-registered-text">
+                                            <i class="bi bi-people-fill"></i>
+                                            {{ event.registered_count }}/{{ event.max_participants }} registered
+                                        </p>
+
+                                        <p class="event-seat-text seat-{{ event.availability_class }}">
+                                            <i class="bi bi-ticket-perforated-fill"></i>
+                                            {{ event.seats_left_count }} seats left
+                                        </p>
+
+                                        <div class="event-detail-link">
+                                            View Details
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </a>
                 </div>
+            {% endfor %}
 
-                <div class="card-body">
-                    <span class="badge category-badge workshop mb-2">Workshop</span>
-
-                    <h5 class="fw-bold event-title">AI & Machine Learning Workshop</h5>
-
-                    <p class="event-info mb-1">
-                        <strong>Date:</strong> 23 April 2026
-                    </p>
-
-                    <p class="event-info mb-1">
-                        <strong>Time:</strong> 2:00 PM - 4:00 PM
-                    </p>
-
-                    <p class="event-info mb-1">
-                        <strong>Registered:</strong> 45 / 50 students
-                    </p>
-
-                    <p class="event-info text-success mb-3">
-                        <strong>Seats Left:</strong> 5 available
-                    </p>
-
-                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
-                </div>
-            </div>
         </div>
 
-        <!-- EVENT 2 -->
-        <div class="col-md-4 mb-4">
-            <div class="card event-card">
-                <div class="event-img-wrapper">
-                    <img src="{% static 'images/event2.jpg' %}" class="card-img-top" alt="Open Mic Night">
-                    <span class="status-badge status-open">Open</span>
-                </div>
-
-                <div class="card-body">
-                    <span class="badge category-badge seminar mb-2">Seminar</span>
-
-                    <h5 class="fw-bold event-title">Open Mic Night</h5>
-
-                    <p class="event-info mb-1">
-                        <strong>Date:</strong> 30 April 2026
-                    </p>
-
-                    <p class="event-info mb-1">
-                        <strong>Time:</strong> 6:00 PM - 9:00 PM
-                    </p>
-
-                    <p class="event-info mb-1">
-                        <strong>Registered:</strong> 28 / 30 students
-                    </p>
-
-                    <p class="event-info text-warning mb-3">
-                        <strong>Seats Left:</strong> Few spots left
-                    </p>
-
-                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
-                </div>
-            </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'event_list' %}" class="btn btn-purple px-5">
+                See More
+            </a>
         </div>
 
-        <!-- EVENT 3 -->
-        <div class="col-md-4 mb-4">
-            <div class="card event-card">
-                <div class="event-img-wrapper">
-                    <img src="{% static 'images/event3.jpg' %}" class="card-img-top" alt="Web Development Bootcamp">
-                    <span class="status-badge status-full">Full</span>
+    {% else %}
+        <div class="empty-state-box">
+            <h5>No events available yet</h5>
+            <p>Please check back later for upcoming campus events.</p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- TRENDING EVENTS SECTION -->
+<section class="container mt-5 mb-5">
+    <h4 class="fw-bold mb-4 section-heading">Trending Events</h4>
+
+    {% if trending_events %}
+        <div class="row g-4 align-items-stretch">
+
+            {% for event in trending_events %}
+                <div class="col-lg-4 col-md-6 d-flex">
+                    <a href="{% url 'event_detail' event.id %}" class="event-card-link">
+                        <div class="event-card-v2">
+
+                            <div class="event-card-image-wrap">
+                                {% if event.event_image %}
+                                    <img src="{{ event.event_image.url }}" class="event-card-image" alt="{{ event.title }}">
+                                {% else %}
+                                    <img src="{% static 'images/um.png' %}" class="event-card-image" alt="{{ event.title }}">
+                                {% endif %}
+                            </div>
+
+                            <div class="event-card-content">
+
+                                <div class="event-chip-row">
+                                    <span class="event-chip chip-category">
+                                        {{ event.category }}
+                                    </span>
+
+                                    {% if event.availability_class == "open" %}
+                                        <span class="event-chip chip-open">Open</span>
+                                    {% elif event.availability_class == "limited" %}
+                                        <span class="event-chip chip-limited">Few Seats</span>
+                                    {% elif event.availability_class == "full" %}
+                                        <span class="event-chip chip-full">Full</span>
+                                    {% else %}
+                                        <span class="event-chip chip-full">Closed</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="event-main-row">
+                                    <div class="event-date-box">
+                                        <span>{{ event.event_date|date:"M" }}</span>
+                                        <strong>{{ event.event_date|date:"d" }}</strong>
+                                    </div>
+
+                                    <div class="event-main-info">
+                                        <h5 class="event-title">{{ event.title }}</h5>
+
+                                        <p class="event-time-text">
+                                            <i class="bi bi-clock"></i>
+                                            {{ event.event_time|time:"g:i A" }}
+                                        </p>
+
+                                        <p class="event-venue-text">
+                                            <i class="bi bi-geo-alt"></i>
+                                            {{ event.venue }}
+                                        </p>
+
+                                        <p class="event-registered-text">
+                                            <i class="bi bi-people-fill"></i>
+                                            {{ event.registered_count }}/{{ event.max_participants }} registered
+                                        </p>
+
+                                        <p class="event-seat-text seat-{{ event.availability_class }}">
+                                            <i class="bi bi-ticket-perforated-fill"></i>
+                                            {{ event.seats_left_count }} seats left
+                                        </p>
+
+                                        <div class="event-detail-link">
+                                            View Details
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </a>
                 </div>
+            {% endfor %}
 
-                <div class="card-body">
-                    <span class="badge category-badge technology mb-2">Technology</span>
-
-                    <h5 class="fw-bold event-title">Web Development Bootcamp</h5>
-
-                    <p class="event-info mb-1">
-                        <strong>Date:</strong> 4 May 2026
-                    </p>
-
-                    <p class="event-info mb-1">
-                        <strong>Time:</strong> 1:00 PM - 5:00 PM
-                    </p>
-
-                    <p class="event-info mb-1">
-                        <strong>Registered:</strong> 40 / 40 students
-                    </p>
-
-                    <p class="event-info text-danger mb-3">
-                        <strong>Seats Left:</strong> Fully registered
-                    </p>
-
-                    <a href="#" class="btn btn-outline-secondary btn-sm disabled">Registration Full</a>
-                </div>
-            </div>
         </div>
 
-    </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'event_list' %}" class="btn btn-purple px-5">
+                See More
+            </a>
+        </div>
 
-    <div class="text-center mt-4">
-        <button class="btn btn-purple px-5">See More</button>
-    </div>
+    {% else %}
+        <div class="empty-state-box">
+            <h5>No trending events available yet</h5>
+            <p>Please check back later for more highlighted events.</p>
+        </div>
+    {% endif %}
 </section>
 
 <style>
@@ -188,7 +265,7 @@
 
 .hero-content {
     position: absolute;
-    top: 60%;
+    top: 58%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 80%;
@@ -219,15 +296,24 @@
 .search-box input {
     width: 100%;
     padding: 14px 20px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: none;
     outline: none;
     font-size: 16px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.25);
 }
 
+/* CATEGORY */
 .category {
     width: 150px;
+    text-decoration: none;
+    color: #111;
+    transition: 0.25s ease;
+}
+
+.category:hover {
+    color: #111;
+    transform: translateY(-4px);
 }
 
 .category img {
@@ -235,6 +321,7 @@
     height: 85px;
     border-radius: 50%;
     object-fit: cover;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
 .category p {
@@ -243,83 +330,251 @@
     font-weight: 600;
 }
 
-.event-card {
-    border: none;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-    transition: 0.2s ease;
+.section-heading {
+    color: #172033;
+    font-size: 28px;
+    letter-spacing: 1px;
+}
+
+/* EVENT CARD */
+.event-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%;
     height: 100%;
 }
 
-.event-card:hover {
-    transform: translateY(-4px);
+.event-card-link:hover {
+    color: inherit;
 }
 
-.event-img-wrapper {
-    position: relative;
+.event-card-v2 {
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 22px rgba(18, 25, 38, 0.08);
+    transition: all 0.25s ease;
+    height: 100%;
+    width: 100%;
+    border: 1px solid #f0f0f4;
+    display: flex;
+    flex-direction: column;
 }
 
-.event-card img {
-    height: 180px;
+.event-card-v2:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(18, 25, 38, 0.13);
+}
+
+.event-card-image-wrap {
+    height: 145px;
+    overflow: hidden;
+    background: #eaeaea;
+}
+
+.event-card-image {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    display: block;
 }
 
-.status-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    color: white;
-    font-size: 13px;
+/* content smaller */
+.event-card-content {
+    padding: 13px 14px 15px;
+    flex: 1;
+}
+
+.event-chip-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.event-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 11px;
     font-weight: 700;
+    letter-spacing: 0.2px;
 }
 
-.status-open {
-    background-color: #198754;
+.chip-category {
+    background: #7f6df2;
+    color: white;
 }
 
-.status-full {
-    background-color: #dc3545;
+.chip-open {
+    background: #dff7e7;
+    color: #167a3f;
 }
 
-.category-badge {
-    font-size: 13px;
-    padding: 6px 12px;
-    border-radius: 20px;
+.chip-limited {
+    background: #fff2cf;
+    color: #a66b00;
 }
 
-.workshop {
-    background-color: #0d6efd;
+.chip-full {
+    background: #ffe1e4;
+    color: #c92d42;
 }
 
-.seminar {
-    background-color: #ffc107;
-    color: #000;
+.event-main-row {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 12px;
+    align-items: start;
 }
 
-.technology {
-    background-color: #198754;
+.event-date-box {
+    width: 52px;
+    min-width: 52px;
+    text-align: center;
+    background: #f7f8fc;
+    border-radius: 12px;
+    padding: 8px 5px;
+    border: 1px solid #ececf4;
+}
+
+.event-date-box span {
+    display: block;
+    color: #5b55d6;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.event-date-box strong {
+    display: block;
+    color: #1d2238;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.event-main-info {
+    min-width: 0;
 }
 
 .event-title {
-    min-height: 48px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #1d2238;
+    margin: 0 0 8px;
+    line-height: 1.25;
+    min-height: 42px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.event-info {
-    font-size: 14px;
+/* smaller text lines */
+.event-time-text,
+.event-venue-text,
+.event-registered-text,
+.event-seat-text {
+    margin: 0 0 6px;
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.3;
+}
+
+.event-time-text,
+.event-venue-text {
+    color: #5b6072;
+}
+
+.event-time-text i,
+.event-venue-text i {
+    color: #6f5ef6;
+    font-size: 13px;
+}
+
+.event-registered-text {
+    color: #22283a;
+    font-weight: 700;
+}
+
+.event-registered-text i {
+    color: #1b1f30;
+    font-size: 12px;
+}
+
+/* SEATS COLOR */
+.event-seat-text {
+    font-weight: 800;
+}
+
+.seat-open {
+    color: #16833d;
+}
+
+.seat-limited {
+    color: #b87900;
+}
+
+.seat-full,
+.seat-closed {
+    color: #c92d42;
+}
+
+.event-seat-text i {
+    font-size: 12px;
+}
+
+.event-detail-link {
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 900;
+    color: #1f2440;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.event-card-v2:hover .event-detail-link {
+    color: #6f5ef6;
 }
 
 .btn-purple {
-    background-color: #8c7ae6;
-    color: white;
-    border-radius: 8px;
+    background: #c5b8ff;
+    color: #111;
+    border: 1px solid #7e6ee8;
+    border-radius: 7px;
+    font-weight: 700;
+    font-size: 13px;
+    min-width: 190px;
+    padding-top: 9px;
+    padding-bottom: 9px;
 }
 
 .btn-purple:hover {
-    background-color: #6c5ce7;
-    color: white;
+    background: #aa9df0;
+    color: #111;
+}
+
+.empty-state-box {
+    background: #fafaff;
+    border: 1px solid #ececf6;
+    border-radius: 16px;
+    text-align: center;
+    padding: 40px 20px;
+    color: #555b6d;
+}
+
+.empty-state-box h5 {
+    color: #1d2238;
+    margin-bottom: 8px;
+    font-weight: 700;
 }
 
 @media (max-width: 768px) {
@@ -344,6 +599,32 @@
     .search-box {
         width: 90%;
         margin: 40px auto 0;
+    }
+
+    .category {
+        width: 120px;
+    }
+
+    .event-card-image-wrap {
+        height: 170px;
+    }
+
+    .section-heading {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .event-main-row {
+        grid-template-columns: 1fr;
+    }
+
+    .event-date-box {
+        width: 100%;
+    }
+
+    .event-title {
+        min-height: auto;
     }
 }
 </style>

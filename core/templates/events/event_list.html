@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    body {
+        background: #ffffff;
+    }
+
+    .events-page {
+        padding-top: 60px;
+        min-height: 100vh;
+        background: #ffffff;
+        font-family: Arial, sans-serif;
+    }
+
+    .events-hero {
+        background: #2f2f4f;
+        color: white;
+        text-align: center;
+        padding: 90px 20px 75px;
+    }
+
+    .events-hero h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 32px;
+        letter-spacing: 0.5px;
+    }
+
+    .search-box {
+        max-width: 680px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 160px;
+        background: white;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .search-box input,
+    .search-box select {
+        border: none;
+        height: 45px;
+        padding: 0 16px;
+        font-size: 13px;
+        outline: none;
+    }
+
+    .search-box select {
+        border-left: 1px solid #ddd;
+    }
+
+    .events-content {
+        max-width: 1000px;
+        margin: 35px auto 70px;
+        padding: 0 20px;
+    }
+
+    .events-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 35px;
+        font-size: 12px;
+    }
+
+    .events-toolbar select {
+        height: 32px;
+        border: 1px solid #bbb;
+        border-radius: 3px;
+        padding: 0 8px;
+        font-size: 12px;
+        background: white;
+    }
+
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px 35px;
+    }
+
+    .events-content {
+        max-width: 1180px;
+        margin: 35px auto 70px;
+       padding: 0 20px;
+    }
+    .event-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .event-item {
+        display: grid;
+        grid-template-columns: 175px 1fr;
+        gap: 18px;
+        min-height: 110px;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .event-item:hover {
+        transform: translateY(-3px);
+    }
+
+    .event-img {
+        width: 175px;
+        height: 110px;
+        overflow: hidden;
+        background: #ddd;
+        border-radius: 2px;
+    }
+
+    .event-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .event-details h3 {
+        margin: 0 0 8px;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.35;
+        color: #222;
+    }
+
+    .event-details p {
+        margin: 0 0 4px;
+        font-size: 12px;
+        color: #333;
+        line-height: 1.35;
+    }
+
+    .event-category {
+        display: inline-block;
+        font-size: 11px;
+        color: white;
+        background: #6e5edb;
+        padding: 2px 7px;
+        border-radius: 2px;
+        margin-bottom: 6px;
+    }
+
+    .registered {
+        color: #108e34 !important;
+        font-weight: 600;
+        font-size: 12px !important;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .registered i {
+        font-size: 12px;
+    }
+
+    .registered.full,
+    .registered.closed {
+        color: #bb2222 !important;
+    }
+
+    .registered.limited {
+        color: #b37a00 !important;
+    }
+
+    .empty-box {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+        background: #f8f8f8;
+        border-radius: 6px;
+    }
+
+    .pagination-box {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 45px;
+        flex-wrap: wrap;
+    }
+
+    .pagination-box a,
+    .pagination-box span {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        text-decoration: none;
+        font-size: 12px;
+        color: #2f2f4f;
+        background: white;
+        border-radius: 3px;
+    }
+
+    .pagination-box .current {
+        background: #2f2f4f;
+        color: white;
+        border-color: #2f2f4f;
+    }
+
+    .pagination-box .disabled {
+        color: #aaa;
+        background: #f2f2f2;
+    }
+
+    @media (max-width: 1050px) {
+    .events-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+
+        .event-item {
+            grid-template-columns: 150px 1fr;
+        }
+
+        .event-img {
+            width: 150px;
+            height: 100px;
+        }
+
+        .search-box {
+            grid-template-columns: 1fr;
+        }
+
+        .search-box select {
+            border-left: none;
+            border-top: 1px solid #ddd;
+        }
+    }
+</style>
+
+<div class="events-page">
+
+    <section class="events-hero">
+        <h1>Explore events in UM. Find what excites you!</h1>
+
+        <form class="search-box" method="get" action="{% url 'event_list' %}">
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Search Events, Categories,..."
+            >
+
+            <select name="category" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                {% for value, label in categories %}
+                    <option value="{{ value }}" {% if category_filter == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <input type="hidden" name="sort" value="{{ sort_by }}">
+            <input type="hidden" name="per_page" value="{{ per_page }}">
+        </form>
+    </section>
+
+    <main class="events-content">
+
+        <div class="events-toolbar">
+            <form method="get" action="{% url 'event_list' %}">
+                <input type="hidden" name="q" value="{{ query }}">
+                <input type="hidden" name="category" value="{{ category_filter }}">
+                <input type="hidden" name="per_page" value="{{ per_page }}">
+
+                <label>Sort by:</label>
+                <select name="sort" onchange="this.form.submit()">
+                    <option value="latest" {% if sort_by == "latest" %}selected{% endif %}>Relevance</option>
+                    <option value="date" {% if sort_by == "date" %}selected{% endif %}>Date</option>
+                    <option value="seats" {% if sort_by == "seats" %}selected{% endif %}>Seats</option>
+                </select>
+            </form>
+
+            <form method="get" action="{% url 'event_list' %}">
+                <input type="hidden" name="q" value="{{ query }}">
+                <input type="hidden" name="category" value="{{ category_filter }}">
+                <input type="hidden" name="sort" value="{{ sort_by }}">
+
+                <label>View:</label>
+                <select name="per_page" onchange="this.form.submit()">
+                    {% for number in allowed_per_page %}
+                        <option value="{{ number }}" {% if per_page == number %}selected{% endif %}>
+                            {{ number }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        {% if events %}
+            <div class="events-grid">
+                {% for event in events %}
+                    <a href="{% url 'event_detail' event.id %}" class="event-link">
+                        <article class="event-item">
+
+                            <div class="event-img">
+                                {% if event.event_image %}
+                                    <img src="{{ event.event_image.url }}" alt="{{ event.title }}">
+                                {% else %}
+                                    <img src="{% static 'images/um.png' %}" alt="{{ event.title }}">
+                                {% endif %}
+                            </div>
+
+                            <div class="event-details">
+                                <span class="event-category">{{ event.category }}</span>
+
+                                <h3>{{ event.title }}</h3>
+
+                                <p>{{ event.event_date|date:"M d" }}</p>
+                                <p>{{ event.event_time|time:"g:i A" }}</p>
+
+                                <p class="registered {{ event.availability_class }}">
+                                    <i class="bi bi-people-fill"></i>
+                                    {{ event.registered_count }}/{{ event.max_participants }} registered
+                                </p>
+                            </div>
+
+                        </article>
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div class="pagination-box">
+                {% if page_obj.has_previous %}
+                    <a href="?q={{ query }}&category={{ category_filter }}&sort={{ sort_by }}&per_page={{ per_page }}&page=1">First</a>
+                    <a href="?q={{ query }}&category={{ category_filter }}&sort={{ sort_by }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                {% else %}
+                    <span class="disabled">First</span>
+                    <span class="disabled">Previous</span>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?q={{ query }}&category={{ category_filter }}&sort={{ sort_by }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}">Next</a>
+                    <a href="?q={{ query }}&category={{ category_filter }}&sort={{ sort_by }}&per_page={{ per_page }}&page={{ page_obj.paginator.num_pages }}">Last</a>
+                {% else %}
+                    <span class="disabled">Next</span>
+                    <span class="disabled">Last</span>
+                {% endif %}
+            </div>
+
+        {% else %}
+            <div class="empty-box">
+                <h3>No events found</h3>
+                <p>Try another keyword or category.</p>
+            </div>
+        {% endif %}
+
+    </main>
+
+</div>
+
+{% endblock %}

@@ -5,6 +5,12 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('test/', views.test, name='test'),
 
+    #event-KK
+    path("", views.home, name="home"),
+    path("events/", views.event_list, name="event_list"),
+    path("events/<int:event_id>/", views.event_detail, name="event_detail"),
+
+    #admin-Elaine
     path('admin-dashboard/', views.admin_dashboard_view, name='admin_dashboard'),
     path('admin-monitoring/', views.admin_event_monitoring_view, name='admin_event_monitoring'),
     
