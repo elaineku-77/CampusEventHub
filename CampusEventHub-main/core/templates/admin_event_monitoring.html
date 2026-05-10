@@ -1,0 +1,185 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+
+<style>
+.monitor-container {
+    padding: 45px 60px;
+}
+
+.monitor-title {
+    font-size: 34px;
+    font-weight: 800;
+    margin-bottom: 30px;
+}
+
+.category-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 22px;
+}
+
+.category-row {
+    display: flex;
+    gap: 42px;
+    align-items: flex-start;
+    margin-bottom: 45px;
+}
+
+.category-item {
+    width: 95px;
+    text-align: center;
+    text-decoration: none;
+    color: #222;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.category-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #d9d9d9;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+}
+
+.section-title {
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 18px;
+}
+
+.event-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.event-table th {
+    background: #243370;
+    color: white;
+    padding: 16px 18px;
+    font-size: 15px;
+    text-align: center;
+}
+
+.event-table td {
+    padding: 18px;
+    text-align: center;
+    font-weight: 600;
+    background: white;
+}
+
+.event-table tbody tr:nth-child(even) td {
+    background: #f3f1f1;
+}
+
+.status-open,
+.status-full,
+.btn-details,
+.btn-delete {
+    border: none;
+    border-radius: 22px;
+    padding: 8px 22px;
+    font-weight: 700;
+}
+
+.status-open {
+    background: #4be346;
+    color: black;
+}
+
+.status-full {
+    background: #ffb13d;
+    color: black;
+}
+
+.btn-details {
+    background: #8495ff;
+    color: #102060;
+}
+
+.btn-delete {
+    background: #ff4d55;
+    color: black;
+}
+</style>
+
+<div class="monitor-container">
+
+    <h1 class="monitor-title">Event Monitoring</h1>
+
+    <div class="category-section-title">Display Categories</div>
+
+    <div class="category-row">
+        {% for category in categories %}
+    <a href="{% url 'admin_event_monitoring' %}?category={{ category.code }}" class="category-item">
+    <div class="category-circle">
+    {% if category.code == 'workshop' %}🛠️
+    {% elif category.code == 'seminar' %}🎤
+    {% elif category.code == 'social' %}🎉
+    {% elif category.code == 'sports-fitness' %}⚽
+    {% elif category.code == 'technology-innovation' %}💻
+    {% elif category.code == 'arts' %}🎨
+    {% endif %}
+</div>
+    <div>{{ category.name }}</div>
+    </a>
+    {% endfor %}
+    </div>
+
+    {% if selected_category %}
+    <h2 class="section-title">{{ selected_category_name }} Events</h2>
+    {% else %}
+    <h2 class="section-title">All Events</h2>
+    {% endif %}
+
+    <table class="event-table">
+        <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Registered</th>
+                {% if not selected_category %}
+                <th>Category</th>
+                {% endif %}
+                <th>Status</th>
+                <th>View</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td>{{ event.name }}</td>
+                <td>{{ event.date }}</td>
+                <td>{{ event.time }}</td>
+                <td>{{ event.registered }}</td>
+
+                {% if not selected_category %}
+                <td>{{ event.category_name }}</td>
+                {% endif %}
+
+                <td>
+                    {% if event.status == 'Open' %}
+                    <span class="status-open">Open</span>
+                    {% else %}
+                    <span class="status-full">Full</span>
+                    {% endif %}
+                </td>
+
+                <td><button class="btn-details">Details</button></td>
+                <td><button class="btn-delete">Delete</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

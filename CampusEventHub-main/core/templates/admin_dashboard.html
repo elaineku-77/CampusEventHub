@@ -1,0 +1,318 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="admin-page">
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1 class="fw-bold">Admin Dashboard</h1>
+        <a href="{% url 'add_event' %}" class="create-btn">✚ Create Event</a>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="summary-card yellow">
+                <h5>Total Events</h5>
+                <h2>{{ total_events }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="summary-card green">
+                <h5>Open Events</h5>
+                <h2>{{ open_events }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="summary-card blue">
+                <h5>Total Registered</h5>
+                <h2>{{ total_registered }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="summary-card purple">
+                <h5>Full Events</h5>
+                <h2>{{ full_events }}</h2>
+            </div>
+        </div>
+    </div>
+
+<!-- DISPLAY CATEGORIES -->
+<section class="admin-category-section">
+    <h2 class="fw-bold mb-4">Display Categories</h2>
+
+    <div class="admin-category-row">
+        <div class="admin-category">
+            <img src="{% static 'images/workshop.jpg' %}" alt="Workshop">
+            <p>Workshop</p>
+        </div>
+
+        <div class="admin-category">
+            <img src="{% static 'images/seminar.jpg' %}" alt="Seminar">
+            <p>Seminar</p>
+        </div>
+
+        <div class="admin-category">
+            <img src="{% static 'images/social.jpg' %}" alt="Social">
+            <p>Social</p>
+        </div>
+
+        <div class="admin-category">
+            <img src="{% static 'images/sports.jpg' %}" alt="Sports">
+            <p>Sports & Fitness</p>
+        </div>
+
+        <div class="admin-category">
+            <img src="{% static 'images/tech.jpg' %}" alt="Technology">
+            <p>Technology</p>
+        </div>
+
+        <div class="admin-category">
+            <img src="{% static 'images/art.jpg' %}" alt="Arts">
+            <p>Arts</p>
+        </div>
+    </div>
+</section>
+
+    <section class="mb-5">
+        <h2 class="fw-bold mb-4">Recent Events</h2>
+
+        <div class="table-wrapper">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Registered</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td>{{ event.title }}</td>
+                        <td>{{ event.event_date }}</td>
+                        <td>{{ event.event_time }}</td>
+                        <td>{{ event.registration_count }}</td>
+                        <td>{{ event.category }}</td>
+                        <td>
+                            {% if event.seats_left <= 0 %}
+                                <span class="status full">Full</span>
+                            {% else %}
+                                <span class="status open">{{ event.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            No events available yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+<section class="bottom-banner">
+    <div class="bottom-banner-content text-center">
+        <h4>Create an event and let’s have fun!</h4>
+        <p>Got a show, event, activity or a great experience? Enjoy the university life~</p>
+    </div>
+</section>
+
+<style>
+.admin-page {
+    padding: 55px 60px 20px;
+}
+
+.create-btn {
+    background-color: #ffd43b;
+    color: #111;
+    padding: 14px 38px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.create-btn:hover {
+    background-color: #f5c400;
+    color: #111;
+}
+
+.summary-card {
+    border-radius: 20px;
+    padding: 28px 20px;
+    min-height: 150px;
+    box-shadow: 0 4px 5px rgba(0,0,0,0.25);
+}
+
+.summary-card h5 {
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.summary-card h2 {
+    font-size: 56px;
+    font-weight: 900;
+}
+
+.yellow {
+    background-color: #fff98a;
+}
+
+.green {
+    background-color: #9ff7bf;
+}
+
+.blue {
+    background-color: #9fc5f8;
+}
+
+.purple {
+    background-color: #b69df4;
+}
+
+.admin-category-section {
+    margin-top: 50px;
+    margin-bottom: 60px;
+}
+
+.admin-category-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: center;
+    flex-wrap: nowrap;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.admin-category {
+    width: 130px;
+    text-align: center;
+}
+
+.admin-category img {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 12px;
+}
+
+.admin-category p {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.table-wrapper {
+    max-width: 960px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.admin-table thead {
+    background-color: #26346f;
+    color: white;
+}
+
+.admin-table th {
+    padding: 18px;
+    font-weight: 800;
+}
+
+.admin-table td {
+    padding: 20px;
+    font-weight: 700;
+    vertical-align: middle;
+}
+
+.admin-table tbody tr:nth-child(even) {
+    background-color: #f0eeee;
+}
+
+.admin-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.status {
+    display: inline-block;
+    min-width: 90px;
+    padding: 9px 20px;
+    border-radius: 25px;
+    font-weight: 800;
+}
+
+.status.open {
+    background-color: #42e640;
+    color: #111;
+}
+
+.status.full {
+    background-color: #ffb13b;
+    color: #111;
+}
+
+.bottom-banner {
+    width: 100%;
+    background-color: #2f2f4f;
+    color: #ffd43b;
+    padding: 50px 0;
+    margin-top: 60px;
+}
+
+.bottom-banner-content {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.bottom-banner h4 {
+    font-weight: 700;
+    font-size: 26px;
+}
+
+.bottom-banner p {
+    margin: 0;
+    color: #ffd43b;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .admin-page {
+        padding: 30px 20px;
+    }
+
+    .summary-card h2 {
+        font-size: 42px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .bottom-banner {
+        padding: 35px 20px;
+    }
+}
+</style>
+
+{% endblock %}

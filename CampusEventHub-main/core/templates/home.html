@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <img src="{% static 'images/um.png' %}" class="hero-img" alt="UM Banner">
+
+    <div class="hero-content">
+        <h2>Don’t miss out!</h2>
+        <h3>Your Gateway to UM’s Vibrant Event Scene.</h3>
+
+        <div class="search-box">
+            <input type="text" placeholder="Search Events, Categories...">
+        </div>
+    </div>
+</section>
+
+<!-- CATEGORY SECTION -->
+<section class="container mt-5">
+    <h4 class="fw-bold mb-4">Explore Categories</h4>
+
+    <div class="d-flex justify-content-between text-center flex-wrap gap-3">
+        <div class="category">
+            <img src="{% static 'images/workshop.jpg' %}" alt="Workshop">
+            <p>Workshop</p>
+        </div>
+
+        <div class="category">
+            <img src="{% static 'images/seminar.jpg' %}" alt="Seminar">
+            <p>Seminar</p>
+        </div>
+
+        <div class="category">
+            <img src="{% static 'images/social.jpg' %}" alt="Social">
+            <p>Social</p>
+        </div>
+
+        <div class="category">
+            <img src="{% static 'images/sports.jpg' %}" alt="Sports">
+            <p>Sports & Fitness</p>
+        </div>
+
+        <div class="category">
+            <img src="{% static 'images/tech.jpg' %}" alt="Technology">
+            <p>Technology</p>
+        </div>
+
+        <div class="category">
+            <img src="{% static 'images/art.jpg' %}" alt="Arts">
+            <p>Arts</p>
+        </div>
+    </div>
+</section>
+
+<!-- EVENTS SECTION -->
+<section class="container mt-5">
+    <h4 class="fw-bold mb-4">Discover Events in UM</h4>
+
+    <div class="row">
+
+        <!-- EVENT 1 -->
+        <div class="col-md-4 mb-4">
+            <div class="card event-card">
+                <div class="event-img-wrapper">
+                    <img src="{% static 'images/event1.jpg' %}" class="card-img-top" alt="AI Workshop">
+                    <span class="status-badge status-open">Open</span>
+                </div>
+
+                <div class="card-body">
+                    <span class="badge category-badge workshop mb-2">Workshop</span>
+
+                    <h5 class="fw-bold event-title">AI & Machine Learning Workshop</h5>
+
+                    <p class="event-info mb-1">
+                        <strong>Date:</strong> 23 April 2026
+                    </p>
+
+                    <p class="event-info mb-1">
+                        <strong>Time:</strong> 2:00 PM - 4:00 PM
+                    </p>
+
+                    <p class="event-info mb-1">
+                        <strong>Registered:</strong> 45 / 50 students
+                    </p>
+
+                    <p class="event-info text-success mb-3">
+                        <strong>Seats Left:</strong> 5 available
+                    </p>
+
+                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVENT 2 -->
+        <div class="col-md-4 mb-4">
+            <div class="card event-card">
+                <div class="event-img-wrapper">
+                    <img src="{% static 'images/event2.jpg' %}" class="card-img-top" alt="Open Mic Night">
+                    <span class="status-badge status-open">Open</span>
+                </div>
+
+                <div class="card-body">
+                    <span class="badge category-badge seminar mb-2">Seminar</span>
+
+                    <h5 class="fw-bold event-title">Open Mic Night</h5>
+
+                    <p class="event-info mb-1">
+                        <strong>Date:</strong> 30 April 2026
+                    </p>
+
+                    <p class="event-info mb-1">
+                        <strong>Time:</strong> 6:00 PM - 9:00 PM
+                    </p>
+
+                    <p class="event-info mb-1">
+                        <strong>Registered:</strong> 28 / 30 students
+                    </p>
+
+                    <p class="event-info text-warning mb-3">
+                        <strong>Seats Left:</strong> Few spots left
+                    </p>
+
+                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVENT 3 -->
+        <div class="col-md-4 mb-4">
+            <div class="card event-card">
+                <div class="event-img-wrapper">
+                    <img src="{% static 'images/event3.jpg' %}" class="card-img-top" alt="Web Development Bootcamp">
+                    <span class="status-badge status-full">Full</span>
+                </div>
+
+                <div class="card-body">
+                    <span class="badge category-badge technology mb-2">Technology</span>
+
+                    <h5 class="fw-bold event-title">Web Development Bootcamp</h5>
+
+                    <p class="event-info mb-1">
+                        <strong>Date:</strong> 4 May 2026
+                    </p>
+
+                    <p class="event-info mb-1">
+                        <strong>Time:</strong> 1:00 PM - 5:00 PM
+                    </p>
+
+                    <p class="event-info mb-1">
+                        <strong>Registered:</strong> 40 / 40 students
+                    </p>
+
+                    <p class="event-info text-danger mb-3">
+                        <strong>Seats Left:</strong> Fully registered
+                    </p>
+
+                    <a href="#" class="btn btn-outline-secondary btn-sm disabled">Registration Full</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="text-center mt-4">
+        <button class="btn btn-purple px-5">See More</button>
+    </div>
+</section>
+
+<style>
+.hero-section {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.hero-img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.hero-content {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    text-align: center;
+    color: white;
+}
+
+.hero-content h2 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.65);
+}
+
+.hero-content h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 55px;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.65);
+}
+
+.search-box {
+    width: 58%;
+    max-width: 600px;
+    margin: 180px auto 0;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+.category {
+    width: 150px;
+}
+
+.category img {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.category p {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.event-card {
+    border: none;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    transition: 0.2s ease;
+    height: 100%;
+}
+
+.event-card:hover {
+    transform: translateY(-4px);
+}
+
+.event-img-wrapper {
+    position: relative;
+}
+
+.event-card img {
+    height: 180px;
+    object-fit: cover;
+}
+
+.status-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.status-open {
+    background-color: #198754;
+}
+
+.status-full {
+    background-color: #dc3545;
+}
+
+.category-badge {
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.workshop {
+    background-color: #0d6efd;
+}
+
+.seminar {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.technology {
+    background-color: #198754;
+}
+
+.event-title {
+    min-height: 48px;
+}
+
+.event-info {
+    font-size: 14px;
+}
+
+.btn-purple {
+    background-color: #8c7ae6;
+    color: white;
+    border-radius: 8px;
+}
+
+.btn-purple:hover {
+    background-color: #6c5ce7;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .hero-img {
+        height: 260px;
+    }
+
+    .hero-content {
+        top: 50%;
+        width: 90%;
+    }
+
+    .hero-content h2 {
+        font-size: 22px;
+    }
+
+    .hero-content h3 {
+        font-size: 16px;
+        margin-bottom: 25px;
+    }
+
+    .search-box {
+        width: 90%;
+        margin: 40px auto 0;
+    }
+}
+</style>
+
+{% endblock %}

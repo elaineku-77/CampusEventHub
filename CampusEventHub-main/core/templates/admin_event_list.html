@@ -1,0 +1,85 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container admin-page">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold">Admin Event Management</h1>
+        <a href="{% url 'add_event' %}" class="btn btn-primary add-btn">+ Add New Event</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Event</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Venue</th>
+                        <th>Status</th>
+                        <th>Max Seats</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td>{{ event.title }}</td>
+                        <td>{{ event.category }}</td>
+                        <td>{{ event.event_date }}</td>
+                        <td>{{ event.event_time }}</td>
+                        <td>{{ event.venue }}</td>
+                        <td>
+                            {% if event.status == 'Open' %}
+                                <span class="badge bg-success">Open</span>
+                            {% else %}
+                                <span class="badge bg-danger">Closed</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ event.max_participants }}</td>
+                        <td>
+                            <a href="{% url 'edit_event' event.id %}" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="{% url 'delete_event' event.id %}" 
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this event?');">
+                               Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">No events available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-page {
+    padding-top: 30px;
+    padding-bottom: 60px;
+}
+
+.add-btn {
+    padding: 10px 24px;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.table th {
+    font-weight: 700;
+}
+</style>
+
+{% endblock %}
