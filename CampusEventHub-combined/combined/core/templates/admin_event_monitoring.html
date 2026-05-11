@@ -1,0 +1,287 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="monitor-page">
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1 class="fw-bold">Event Monitoring</h1>
+        <span class="total-badge">{{ events|length }} Total Events</span>
+    </div>
+
+    <!-- Summary Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="summary-card yellow">
+                <h5>Total Events</h5>
+                <h2>{{ total_events }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="summary-card green">
+                <h5>Open Events</h5>
+                <h2>{{ open_events }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="summary-card blue">
+                <h5>Total Registered</h5>
+                <h2>{{ total_registered }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="summary-card purple">
+                <h5>Full Events</h5>
+                <h2>{{ full_events }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar mb-4">
+        <form method="get" class="d-flex flex-wrap gap-3 align-items-center">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search event name..."
+                   class="filter-input">
+
+            <select name="category" class="filter-select" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                {% for val, label in categories %}
+                    <option value="{{ val }}" {% if category_filter == val %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="status" class="filter-select" onchange="this.form.submit()">
+                <option value="">All Status</option>
+                <option value="Open"   {% if status_filter == "Open"   %}selected{% endif %}>Open</option>
+                <option value="Closed" {% if status_filter == "Closed" %}selected{% endif %}>Closed</option>
+            </select>
+
+            <button type="submit" class="filter-btn">Search</button>
+
+            {% if query or category_filter or status_filter %}
+                <a href="{% url 'admin_event_monitoring' %}" class="clear-btn">✕ Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <table class="table monitor-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Event Name</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Venue</th>
+                    <th>Registered</th>
+                    <th>Max Seats</th>
+                    <th>Seats Left</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="event-name">{{ event.title }}</td>
+                    <td><span class="chip-cat">{{ event.category }}</span></td>
+                    <td>{{ event.event_date|date:"d M Y" }}</td>
+                    <td>{{ event.event_time|time:"g:i A" }}</td>
+                    <td>{{ event.venue }}</td>
+                    <td><strong>{{ event.registration_count }}</strong></td>
+                    <td>{{ event.max_participants }}</td>
+                    <td>
+                        {% with seats=event.seats_left %}
+                            {% if seats <= 0 %}
+                                <span class="seats-badge full">Full</span>
+                            {% elif seats <= 5 %}
+                                <span class="seats-badge limited">{{ seats }} left</span>
+                            {% else %}
+                                <span class="seats-badge open">{{ seats }} left</span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        {% if event.status == 'Open' and event.seats_left > 0 %}
+                            <span class="status-badge open">Open</span>
+                        {% elif event.seats_left <= 0 %}
+                            <span class="status-badge full">Full</span>
+                        {% else %}
+                            <span class="status-badge closed">Closed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center text-muted py-4">No events found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<style>
+.monitor-page {
+    padding: 40px 60px 60px;
+}
+
+.total-badge {
+    background: #2f2f4f;
+    color: #ffd43b;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* Reuse dashboard summary card styles */
+.summary-card {
+    border-radius: 20px;
+    padding: 28px 20px;
+    min-height: 130px;
+    box-shadow: 0 4px 5px rgba(0,0,0,0.15);
+}
+.summary-card h5 { font-weight: 800; margin-bottom: 10px; }
+.summary-card h2 { font-size: 48px; font-weight: 900; }
+.yellow  { background-color: #fff98a; }
+.green   { background-color: #9ff7bf; }
+.blue    { background-color: #9fc5f8; }
+.purple  { background-color: #b69df4; }
+
+/* Filter bar */
+.filter-bar {
+    background: #f8f8fc;
+    padding: 18px 22px;
+    border-radius: 10px;
+    border: 1px solid #e8e8f0;
+}
+
+.filter-input {
+    height: 38px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0 12px;
+    font-size: 13px;
+    min-width: 220px;
+    outline: none;
+}
+
+.filter-select {
+    height: 38px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0 10px;
+    font-size: 13px;
+    background: white;
+    outline: none;
+}
+
+.filter-btn {
+    height: 38px;
+    padding: 0 22px;
+    background: #2f2f4f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.filter-btn:hover { background: #3d3d65; }
+
+.clear-btn {
+    height: 38px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    color: #888;
+    font-size: 13px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+}
+
+.clear-btn:hover { color: #333; background: #f0f0f0; }
+
+/* Table */
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.monitor-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 14px;
+}
+
+.monitor-table thead {
+    background-color: #26346f;
+    color: white;
+}
+
+.monitor-table th {
+    padding: 14px 16px;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.monitor-table td {
+    padding: 14px 16px;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.monitor-table tbody tr:hover { background: #fafafe; }
+
+.event-name {
+    text-align: left !important;
+    font-weight: 600;
+    max-width: 200px;
+}
+
+.chip-cat {
+    background: #ede9ff;
+    color: #5b3fd4;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.seats-badge, .status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.seats-badge.open   { background: #dff7e7; color: #167a3f; }
+.seats-badge.limited{ background: #fff2cf; color: #a66b00; }
+.seats-badge.full   { background: #ffe1e4; color: #c92d42; }
+
+.status-badge.open  { background: #9ff7bf; color: #0a6630; }
+.status-badge.closed{ background: #f0f0f0; color: #666;    }
+.status-badge.full  { background: #ffb13b; color: #5a3000; }
+
+@media (max-width: 768px) {
+    .monitor-page { padding: 20px; }
+}
+</style>
+
+{% endblock %}

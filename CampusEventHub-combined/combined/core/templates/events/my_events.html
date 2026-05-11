@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Events | CampusEventHub{% endblock %}
+
+{% block content %}
+
+<style>
+    .my-events-page {
+        padding-top: 80px;
+        min-height: 80vh;
+        background: #ffffff;
+        font-family: Arial, sans-serif;
+    }
+
+    .my-events-hero {
+        background: #2f2f4f;
+        color: white;
+        text-align: center;
+        padding: 50px 20px 40px;
+        margin-bottom: 40px;
+    }
+
+    .my-events-hero h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .my-events-hero p {
+        font-size: 15px;
+        color: #ccc;
+        margin: 0;
+    }
+
+    .my-events-content {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+    }
+
+    .event-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    .event-card-link:hover { color: inherit; }
+
+    .event-card-v2 {
+        background: #ffffff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 8px 22px rgba(18,25,38,0.08);
+        transition: all 0.25s ease;
+        height: 100%;
+        width: 100%;
+        border: 1px solid #f0f0f4;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .event-card-v2:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 30px rgba(18,25,38,0.13);
+    }
+
+    .event-card-image-wrap {
+        height: 145px;
+        overflow: hidden;
+        background: #eaeaea;
+    }
+
+    .event-card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .event-card-content {
+        padding: 13px 14px 15px;
+        flex: 1;
+    }
+
+    .event-chip-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .event-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 11px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .chip-category { background: #7f6df2; color: white; }
+    .chip-open     { background: #dff7e7; color: #167a3f; }
+    .chip-limited  { background: #fff2cf; color: #a66b00; }
+    .chip-full, .chip-closed { background: #ffe1e4; color: #c92d42; }
+
+    .event-main-row {
+        display: grid;
+        grid-template-columns: 52px 1fr;
+        gap: 12px;
+        align-items: start;
+    }
+
+    .event-date-box {
+        width: 52px;
+        min-width: 52px;
+        text-align: center;
+        background: #f7f8fc;
+        border-radius: 12px;
+        padding: 8px 5px;
+        border: 1px solid #ececf4;
+    }
+
+    .event-date-box span {
+        display: block;
+        color: #5b55d6;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .event-date-box strong {
+        display: block;
+        color: #1d2238;
+        font-size: 19px;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+
+    .event-title {
+        font-size: 17px;
+        font-weight: 800;
+        color: #1d2238;
+        margin: 0 0 8px;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .event-meta {
+        margin: 0 0 5px;
+        font-size: 12.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #5b6072;
+        line-height: 1.3;
+    }
+
+    .event-meta i { color: #6f5ef6; font-size: 13px; }
+
+    .registered-on {
+        margin-top: 10px;
+        font-size: 11px;
+        color: #999;
+        border-top: 1px solid #f0f0f4;
+        padding-top: 8px;
+    }
+
+    .empty-state-box {
+        background: #fafaff;
+        border: 1px solid #ececf6;
+        border-radius: 16px;
+        text-align: center;
+        padding: 60px 20px;
+        color: #555b6d;
+    }
+
+    .empty-state-box h5 {
+        color: #1d2238;
+        margin-bottom: 10px;
+        font-weight: 700;
+        font-size: 20px;
+    }
+
+    .btn-browse {
+        display: inline-block;
+        margin-top: 16px;
+        background: #7f6df2;
+        color: white;
+        padding: 10px 28px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+    .btn-browse:hover { background: #6655d4; color: white; }
+</style>
+
+<div class="my-events-page">
+
+    <div class="my-events-hero">
+        <h1>My Registered Events</h1>
+        <p>All events you have signed up for</p>
+    </div>
+
+    <div class="my-events-content">
+
+        {% if registrations %}
+            <div class="row g-4 align-items-stretch">
+                {% for registration in registrations %}
+                    <div class="col-lg-4 col-md-6 d-flex">
+                        <a href="{% url 'event_detail' registration.event.id %}" class="event-card-link">
+                            <div class="event-card-v2">
+
+                                <div class="event-card-image-wrap">
+                                    {% if registration.event.event_image %}
+                                        <img src="{{ registration.event.event_image.url }}" class="event-card-image" alt="{{ registration.event.title }}">
+                                    {% else %}
+                                        <img src="{% static 'images/um.png' %}" class="event-card-image" alt="{{ registration.event.title }}">
+                                    {% endif %}
+                                </div>
+
+                                <div class="event-card-content">
+                                    <div class="event-chip-row">
+                                        <span class="event-chip chip-category">{{ registration.event.category }}</span>
+                                        {% if registration.event.availability_class == "open" %}
+                                            <span class="event-chip chip-open">Open</span>
+                                        {% elif registration.event.availability_class == "limited" %}
+                                            <span class="event-chip chip-limited">Few Seats</span>
+                                        {% elif registration.event.availability_class == "full" %}
+                                            <span class="event-chip chip-full">Full</span>
+                                        {% else %}
+                                            <span class="event-chip chip-closed">Closed</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="event-main-row">
+                                        <div class="event-date-box">
+                                            <span>{{ registration.event.event_date|date:"M" }}</span>
+                                            <strong>{{ registration.event.event_date|date:"d" }}</strong>
+                                        </div>
+
+                                        <div>
+                                            <h5 class="event-title">{{ registration.event.title }}</h5>
+                                            <p class="event-meta"><i class="bi bi-clock"></i> {{ registration.event.event_time|time:"g:i A" }}</p>
+                                            <p class="event-meta"><i class="bi bi-geo-alt"></i> {{ registration.event.venue }}</p>
+                                            <p class="event-meta"><i class="bi bi-people-fill"></i>
+                                                {{ registration.event.registered_count }}/{{ registration.event.max_participants }} registered
+                                            </p>
+                                            <div class="registered-on">
+                                                ✅ Registered on {{ registration.registered_at|date:"d M Y, g:i A" }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div class="empty-state-box">
+                <h5>You haven't registered for any events yet.</h5>
+                <p>Browse upcoming events and sign up today!</p>
+                <a href="{% url 'event_list' %}" class="btn-browse">Browse Events</a>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

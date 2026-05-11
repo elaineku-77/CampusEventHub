@@ -1,0 +1,438 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    body {
+        background: white;
+    }
+
+    .detail-page {
+        padding-top: 60px;
+        font-family: Arial, sans-serif;
+        background: #ffffff;
+        color: #222;
+    }
+
+    .detail-container {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 22px 20px 60px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        color: #222;
+        font-size: 22px;
+        text-decoration: none;
+        margin-bottom: 15px;
+    }
+
+    .back-link:hover {
+        color: #f5c542;
+    }
+
+    .detail-hero {
+        width: 100%;
+        height: 300px;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #ddd;
+    }
+
+    .detail-hero img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .title-row {
+        display: grid;
+        grid-template-columns: 1fr 250px;
+        gap: 30px;
+        margin-top: 25px;
+    }
+
+    .title-row h1 {
+        margin: 0;
+        font-size: 34px;
+        font-weight: 700;
+        color: #2b2b38;
+    }
+
+    .icon-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 18px;
+        font-size: 22px;
+        color: #2f2f4f;
+    }
+
+    .icon-actions i {
+        cursor: pointer;
+    }
+
+    .icon-actions i:hover {
+        color: #f5c542;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 40px;
+        margin-top: 20px;
+    }
+
+    .section {
+        margin-bottom: 34px;
+    }
+
+    .section h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        color: #2b2b38;
+    }
+
+    .small-info {
+        font-size: 14px;
+        color: #333;
+        line-height: 1.7;
+    }
+
+    .info-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 7px 0;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .info-line i {
+        width: 18px;
+        min-width: 18px;
+        color: #2f2f4f;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .add-calendar {
+        color: #3526a5;
+        font-size: 13px;
+        text-decoration: none;
+        margin-left: 28px;
+    }
+
+    .add-calendar:hover {
+        text-decoration: underline;
+    }
+
+    .register-card {
+        padding-top: 8px;
+    }
+
+    .register-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #f6d83d;
+        color: #111;
+        padding: 13px 18px;
+        border-radius: 2px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+
+    .register-btn:hover {
+        background: #e7c82f;
+        color: #111;
+    }
+
+    .register-btn.disabled {
+        background: #ddd;
+        color: #777;
+        pointer-events: none;
+    }
+
+    .register-card h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        color: #2b2b38;
+    }
+
+    .register-info-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 12px 0;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .register-info-line i {
+        width: 18px;
+        min-width: 18px;
+        color: #2f2f4f;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .map-box {
+        width: 420px;
+        max-width: 100%;
+        height: 230px;
+        border: 0;
+        margin-top: 12px;
+    }
+
+    .hosted-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+    }
+
+    .host-logo {
+        width: 45px;
+        height: 45px;
+        object-fit: contain;
+    }
+
+    .host-name {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .host-actions a {
+        display: inline-block;
+        font-size: 11px;
+        padding: 5px 12px;
+        border: 1px solid #bbb;
+        text-decoration: none;
+        color: #222;
+        margin-right: 5px;
+    }
+
+    .host-actions a.follow {
+        background: #2f2f4f;
+        color: white;
+        border-color: #2f2f4f;
+    }
+
+    .description {
+        font-size: 14px;
+        line-height: 1.8;
+        color: #333;
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 15px;
+    }
+
+    .tag {
+        background: #f4f4f6;
+        color: #333;
+        border-radius: 15px;
+        padding: 8px 16px;
+        font-size: 11px;
+    }
+
+    @media (max-width: 800px) {
+        .title-row,
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .icon-actions {
+            justify-content: flex-start;
+        }
+
+        .detail-hero {
+            height: 220px;
+        }
+
+        .title-row h1 {
+            font-size: 26px;
+        }
+    }
+</style>
+
+<div class="detail-page">
+    <div class="detail-container">
+
+        <a class="back-link" href="{% url 'event_list' %}">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+
+        <div class="detail-hero">
+            {% if event.event_image %}
+                <img src="{{ event.event_image.url }}" alt="{{ event.title }}">
+            {% else %}
+                <img src="{% static 'images/um.png' %}" alt="{{ event.title }}">
+            {% endif %}
+        </div>
+
+        <div class="title-row">
+            <h1>{{ event.title }}</h1>
+
+            <div class="icon-actions">
+                <i class="bi bi-star"></i>
+                <i class="bi bi-share"></i>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+
+            <main>
+                <section class="section">
+                    <h3>Date and Time</h3>
+
+                    <div class="small-info">
+                        <p class="info-line">
+                            <i class="bi bi-calendar-event"></i>
+                            <span>{{ event.event_date|date:"l, d F Y" }}</span>
+                        </p>
+
+                        <p class="info-line">
+                            <i class="bi bi-clock"></i>
+                            <span>{{ event.event_time|time:"g:i A" }}</span>
+                        </p>
+
+                        <p>
+                            <a href="#" class="add-calendar">+ Add to Calendar</a>
+                        </p>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h3>Event Category</h3>
+
+                    <div class="small-info">
+                        <p class="info-line">
+                            <i class="bi bi-tag"></i>
+                            <span>{{ event.category }}</span>
+                        </p>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h3>Location</h3>
+
+                    <div class="small-info">
+                        <p class="info-line">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>{{ event.venue }}</span>
+                        </p>
+                    </div>
+
+                    <iframe
+                        class="map-box"
+                        loading="lazy"
+                        src="https://maps.google.com/maps?q={{ event.venue|urlencode }}&output=embed">
+                    </iframe>
+                </section>
+
+                <section class="section">
+                    <h3>Hosted by</h3>
+
+                    <div class="hosted-card">
+                        <img src="{% static 'images/um.png' %}" class="host-logo" alt="University Malaya">
+
+                        <div>
+                            <div class="host-name">Universiti Malaya</div>
+
+                            <div class="host-actions">
+                                <a href="#">Contact</a>
+                                <a href="#" class="follow">+ Follow</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h3>Event Description</h3>
+
+                    <div class="description">
+                        {{ event.description|linebreaks }}
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h3>Tags</h3>
+
+                    <div class="tags">
+                        <span class="tag">{{ event.category }}</span>
+                        <span class="tag">{{ event.status }}</span>
+                        <span class="tag">Student Event</span>
+                        <span class="tag">Campus Event</span>
+                        <span class="tag">University Malaya</span>
+                    </div>
+                </section>
+            </main>
+
+            <aside class="register-card">
+                {% if already_registered %}
+                    <a class="register-btn" style="background:#d4edda; color:#155724; pointer-events:none;">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Already Registered!
+                    </a>
+                {% elif event.can_register %}
+                    {% if current_user %}
+                        <form method="POST" action="{% url 'register_event' event.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="register-btn" style="width:100%; border:none; cursor:pointer;">
+                                <i class="bi bi-ticket-perforated-fill"></i>
+                                Register Now!
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="register-btn">
+                            <i class="bi bi-ticket-perforated-fill"></i>
+                            Login to Register
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a class="register-btn disabled" style="pointer-events:none;">
+                        <i class="bi bi-x-circle-fill"></i>
+                        Registration Closed
+                    </a>
+                {% endif %}
+
+                <h3>Register Information</h3>
+
+                <div class="small-info">
+                    <p class="register-info-line">
+                        <i class="bi bi-people-fill"></i>
+                        <span>{{ event.registered_count }}/{{ event.max_participants }} registered</span>
+                    </p>
+
+                    <p class="register-info-line">
+                        <i class="bi bi-ticket-detailed-fill"></i>
+                        <span>{{ event.seats_left_count }} seats left</span>
+                    </p>
+
+                    <p class="register-info-line">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <span>Status: {{ event.availability_label }}</span>
+                    </p>
+                </div>
+            </aside>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
