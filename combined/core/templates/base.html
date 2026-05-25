@@ -1,0 +1,379 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CampusEventHub{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+    <style>
+        :root {
+            --ceh-header-height: 68px;
+            --ceh-navy: #2f2f4f;
+            --ceh-navy-dark: #0c112f;
+            --ceh-navy-footer: #10143d;
+            --ceh-gold: #f5c542;
+            --ceh-gold-soft: #ffda63;
+            --ceh-white: #ffffff;
+            --ceh-muted: rgba(255,255,255,0.74);
+            --ceh-border: rgba(255,255,255,0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            min-height: var(--ceh-header-height);
+            background: var(--ceh-navy);
+            padding: 10px 0;
+            transition: 0.3s ease;
+            box-shadow: 0 8px 24px rgba(16,20,61,0.10);
+        }
+
+        .navbar.scrolled {
+            box-shadow: 0 6px 18px rgba(0,0,0,0.20);
+        }
+
+        .ceh-brand,
+        .navbar-brand {
+            font-weight: 950;
+            font-size: 24px;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .brand-campus {
+            color: var(--ceh-gold);
+        }
+
+        .brand-eventhub {
+            color: var(--ceh-white);
+        }
+
+        .nav-link {
+            color: white !important;
+            margin: 0 18px;
+            font-size: 17px;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--ceh-gold) !important;
+        }
+
+        .btn-login {
+            color: white;
+            margin-right: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .btn-login:hover {
+            color: var(--ceh-gold);
+        }
+
+        .btn-signup {
+            background: linear-gradient(135deg, var(--ceh-gold), var(--ceh-gold-soft));
+            color: #111;
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 8px 18px rgba(245,197,66,0.18);
+        }
+
+        .btn-signup:hover {
+            filter: brightness(1.03);
+            color: #111;
+        }
+
+        .main-content {
+            min-height: calc(100vh - var(--ceh-header-height));
+            padding-top: var(--ceh-header-height);
+        }
+
+        .message-wrapper {
+            position: fixed;
+            top: 78px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(920px, calc(100% - 32px));
+            z-index: 1040;
+        }
+
+        .ceh-site-footer {
+            background: linear-gradient(135deg, var(--ceh-navy-dark), var(--ceh-navy-footer));
+            color: white;
+            padding: 46px 0 22px;
+            margin-top: 54px;
+        }
+
+        .ceh-site-footer .container {
+            max-width: 1180px;
+        }
+
+        .ceh-footer-brand {
+            font-size: 22px;
+            font-weight: 950;
+            letter-spacing: -0.4px;
+            margin-bottom: 14px;
+        }
+
+        .ceh-footer-text {
+            color: var(--ceh-muted);
+            font-size: 14px;
+            line-height: 1.7;
+            max-width: 330px;
+            margin-bottom: 18px;
+        }
+
+        .ceh-footer-heading {
+            color: white;
+            font-size: 15px;
+            font-weight: 950;
+            margin-bottom: 16px;
+        }
+
+        .ceh-footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ceh-footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .ceh-footer-links a {
+            color: var(--ceh-muted);
+            font-size: 14px;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .ceh-footer-links a:hover {
+            color: var(--ceh-gold);
+            padding-left: 3px;
+        }
+
+        .ceh-social-row {
+            display: flex;
+            gap: 11px;
+            margin-top: 18px;
+        }
+
+        .ceh-social-row a {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: rgba(255,255,255,0.09);
+            color: white;
+            text-decoration: none;
+            transition: 0.22s ease;
+        }
+
+        .ceh-social-row a:hover {
+            background: var(--ceh-gold);
+            color: #111;
+            transform: translateY(-2px);
+        }
+
+        .ceh-footer-info {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--ceh-border);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .ceh-footer-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: var(--ceh-muted);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .ceh-footer-info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .ceh-footer-info-item i {
+            color: var(--ceh-gold);
+            font-size: 17px;
+            margin-top: 2px;
+        }
+
+        .ceh-footer-bottom {
+            margin-top: 36px;
+            padding-top: 20px;
+            border-top: 1px solid var(--ceh-border);
+            color: rgba(255,255,255,0.56);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        @media (max-width: 991px) {
+            .navbar-collapse {
+                padding-top: 12px;
+            }
+
+            .nav-link {
+                margin: 4px 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ceh-site-footer {
+                padding: 36px 0 20px;
+            }
+
+            .ceh-site-footer .row {
+                row-gap: 28px;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <a class="navbar-brand ceh-brand" href="{% url 'home' %}">
+            <span class="brand-campus">Campus</span><span class="brand-eventhub">EventHub</span>
+        </a>
+
+        <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link {% if '/events/' in request.path %}active{% endif %}" href="{% url 'event_list' %}">Events</a></li>
+                <li class="nav-item"><a class="nav-link {% if '/my-events/' in request.path %}active{% endif %}" href="{% if request.session.user_id %}{% url 'my_events' %}{% else %}{% url 'login' %}{% endif %}">My Events</a></li>
+                <li class="nav-item"><a class="nav-link {% if '/profile/' in request.path %}active{% endif %}" href="{% if request.session.user_id %}{% url 'profile' %}{% else %}{% url 'login' %}{% endif %}">My Profile</a></li>
+            </ul>
+
+            <div class="d-flex align-items-center flex-wrap gap-2 justify-content-lg-end">
+                {% if request.session.user_id %}
+                    <a href="{% url 'profile' %}" class="btn-login">{{ request.session.user_full_name|default:'My Profile' }}</a>
+                    <a href="{% url 'logout' %}" class="btn-signup">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-login">Login</a>
+                    <a href="{% url 'register' %}" class="btn-signup">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+{% if messages %}
+<div class="message-wrapper">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="main-content">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<div class="ceh-site-footer">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="ceh-footer-brand">
+                    <span class="brand-campus">Campus</span><span class="brand-eventhub">EventHub</span>
+                </div>
+
+                <p class="ceh-footer-text">
+                    Your gateway to UM’s vibrant event community. Discover, connect, and participate in meaningful campus activities.
+                </p>
+
+                <div class="ceh-social-row">
+                    <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" aria-label="X"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <h6 class="ceh-footer-heading">Quick Links</h6>
+                <ul class="ceh-footer-links">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'event_list' %}">Events</a></li>
+                    <li><a href="{% url 'my_events' %}">My Events</a></li>
+                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3">
+                <h6 class="ceh-footer-heading">Categories</h6>
+                <ul class="ceh-footer-links">
+                    <li><a href="{% url 'event_list' %}?category=Workshop">Workshop</a></li>
+                    <li><a href="{% url 'event_list' %}?category=Seminar">Seminar</a></li>
+                    <li><a href="{% url 'event_list' %}?category=Social">Social</a></li>
+                    <li><a href="{% url 'event_list' %}?category=Sports">Sports & Fitness</a></li>
+                    <li><a href="{% url 'event_list' %}?category=Technology">Technology & Innovation</a></li>
+                    <li><a href="{% url 'event_list' %}?category=Arts">Arts</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3">
+                <h6 class="ceh-footer-heading">Campus Support</h6>
+                <div class="ceh-footer-info">
+                    <div class="ceh-footer-info-item">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>Browse upcoming UM activities and event opportunities.</span>
+                    </div>
+                    <div class="ceh-footer-info-item">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Register and manage your participation securely.</span>
+                    </div>
+                    <div class="ceh-footer-info-item">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Universiti Malaya, 50603 Kuala Lumpur.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ceh-footer-bottom">
+            © 2026 WOC7014 Framework-Based Software Design and Development Group G. All rights reserved.
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/auth.js' %}"></script>
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

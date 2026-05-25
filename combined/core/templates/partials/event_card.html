@@ -1,0 +1,33 @@
+{% load static %}
+<a href="{% url 'event_detail' event.id %}" class="ceh-event-link">
+    <article class="ceh-card ceh-card-hover ceh-event-card">
+        {% if event.event_image %}
+            <img src="{{ event.event_image.url }}" class="ceh-event-img" alt="{{ event.title }}">
+        {% else %}
+            <img src="{% static 'images/um.png' %}" class="ceh-event-img" alt="{{ event.title }}">
+        {% endif %}
+
+        <div class="ceh-event-body">
+            <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+                <span class="ceh-chip ceh-chip-purple"><i class="bi bi-tag"></i>{{ event.category }}</span>
+                <span class="ceh-chip ceh-chip-{{ event.availability_class }}">{{ event.availability_label }}</span>
+            </div>
+
+            <div class="d-flex gap-3 align-items-start">
+                <div class="ceh-date-box">
+                    <span>{{ event.event_date|date:'M' }}</span>
+                    <strong>{{ event.event_date|date:'d' }}</strong>
+                </div>
+
+                <div class="flex-grow-1 min-w-0">
+                    <h5 class="ceh-event-title">{{ event.title }}</h5>
+                    <div class="ceh-meta"><i class="bi bi-clock"></i>{{ event.event_time|time:'g:i A' }}</div>
+                    <div class="ceh-meta"><i class="bi bi-geo-alt"></i>{{ event.venue }}</div>
+                    <div class="ceh-meta fw-bold text-dark"><i class="bi bi-people-fill"></i>{{ event.registered_count }}/{{ event.max_participants }} registered</div>
+                    <div class="ceh-meta fw-bold seat-{{ event.availability_class }}"><i class="bi bi-ticket-perforated-fill"></i>{{ event.seats_left_count }} seats left</div>
+                    <div class="small fw-black text-uppercase mt-2" style="color: var(--ceh-purple); letter-spacing:.3px;">View Details</div>
+                </div>
+            </div>
+        </div>
+    </article>
+</a>

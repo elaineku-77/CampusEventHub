@@ -1,0 +1,755 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Event Monitoring | CampusEventHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .monitor-wrapper {
+        max-width: 1480px;
+        margin: 0 auto;
+    }
+
+    .monitor-header {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 34px;
+        position: relative;
+    }
+
+    .monitor-header-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #8e7cff, #6f4ff2);
+        color: white;
+        display: grid;
+        place-items: center;
+        font-size: 34px;
+        box-shadow: 0 18px 36px rgba(111,79,242,0.28);
+        flex: 0 0 auto;
+    }
+
+    .monitor-title h1 {
+        font-size: 38px;
+        font-weight: 950;
+        letter-spacing: -0.8px;
+        color: var(--admin-text);
+        margin-bottom: 8px;
+    }
+
+    .monitor-title p {
+        color: var(--admin-muted);
+        font-size: 16px;
+        margin: 0;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+        margin-bottom: 26px;
+    }
+
+    .summary-card {
+        min-height: 144px;
+        background: white;
+        border: 1px solid var(--admin-border);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 16px 36px rgba(21, 26, 53, 0.07);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .summary-card.purple {
+        background: linear-gradient(135deg, #fbf8ff, #ffffff);
+        border-color: #e6dcff;
+    }
+
+    .summary-card.green {
+        background: linear-gradient(135deg, #f1fdf6, #ffffff);
+        border-color: #ccefdc;
+    }
+
+    .summary-card.blue {
+        background: linear-gradient(135deg, #f2f7ff, #ffffff);
+        border-color: #d7e7ff;
+    }
+
+    .summary-card.red {
+        background: linear-gradient(135deg, #fff4f5, #ffffff);
+        border-color: #ffd1d8;
+    }
+
+    .summary-main {
+        display: grid;
+        grid-template-columns: 64px 1fr;
+        gap: 18px;
+        align-items: center;
+        position: relative;
+        z-index: 3;
+    }
+
+    .summary-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        font-size: 30px;
+    }
+
+    .icon-purple {
+        background: #eeeaff;
+        color: #6f4ff2;
+    }
+
+    .icon-green {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .icon-blue {
+        background: #e6f0ff;
+        color: #2563eb;
+    }
+
+    .icon-red {
+        background: #ffe4e6;
+        color: #ef4444;
+    }
+
+    .summary-label {
+        color: var(--admin-text);
+        font-size: 15px;
+        font-weight: 950;
+        margin-bottom: 8px;
+    }
+
+    .summary-number {
+        color: var(--admin-text);
+        font-size: 34px;
+        line-height: 1;
+        font-weight: 950;
+        margin-bottom: 8px;
+    }
+
+    .summary-sub {
+        color: var(--admin-muted);
+        font-size: 14px;
+        margin: 0;
+    }
+
+    /* FIXED: curve now stays behind text, lower and softer */
+    .sparkline {
+        position: absolute;
+        right: -8px;
+        bottom: 4px;
+        width: 48%;
+        height: 54px;
+        opacity: 0.38;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .sparkline svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    .filter-panel {
+        background: rgba(255,255,255,0.94);
+        border: 1px solid #ded7ff;
+        border-radius: 16px;
+        padding: 16px 18px;
+        box-shadow: 0 16px 36px rgba(21, 26, 53, 0.07);
+        margin-bottom: 22px;
+    }
+
+    .filter-row {
+        display: grid;
+        grid-template-columns: minmax(280px, 1.6fr) 250px 250px 120px;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .select-box {
+        position: relative;
+    }
+
+    .search-box i,
+    .select-box i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6f4ff2;
+        font-size: 18px;
+        z-index: 2;
+    }
+
+    .filter-control {
+        width: 100%;
+        height: 48px;
+        border-radius: 9px;
+        border: 1px solid #dfe3f2;
+        background: white;
+        color: var(--admin-text);
+        font-size: 14px;
+        font-weight: 800;
+        outline: none;
+        padding: 0 16px 0 48px;
+        transition: 0.18s ease;
+    }
+
+    .filter-control:focus {
+        border-color: #6f4ff2;
+        box-shadow: 0 0 0 4px rgba(111,79,242,0.12);
+    }
+
+    .filter-btn {
+        height: 48px;
+        border: 0;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #2d256b, #4b35a8);
+        color: white;
+        font-weight: 950;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        box-shadow: 0 12px 26px rgba(45,37,107,0.24);
+        transition: 0.2s ease;
+    }
+
+    .filter-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 34px rgba(45,37,107,0.30);
+    }
+
+    .monitor-table-panel {
+        background: white;
+        border: 1px solid var(--admin-border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 16px 38px rgba(21,26,53,0.07);
+    }
+
+    .monitor-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .monitor-table thead {
+        background: #fbfcff;
+    }
+
+    .monitor-table th {
+        color: #151a35;
+        font-size: 13px;
+        font-weight: 950;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--admin-border);
+        white-space: nowrap;
+    }
+
+    .monitor-table td {
+        color: var(--admin-text);
+        font-size: 14px;
+        font-weight: 750;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--admin-border);
+        vertical-align: middle;
+    }
+
+    .monitor-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .monitor-table tbody tr:hover {
+        background: #fbfcff;
+    }
+
+    .event-title-cell {
+        font-weight: 950;
+        color: var(--admin-text);
+    }
+
+    .category-badge,
+    .status-badge,
+    .seat-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+        padding: 7px 13px;
+        font-size: 12px;
+        font-weight: 950;
+        white-space: nowrap;
+    }
+
+    .category-workshop {
+        background: #eeeaff;
+        color: #6f4ff2;
+    }
+
+    .category-technology {
+        background: #dbeafe;
+        color: #0d6efd;
+    }
+
+    .category-seminar {
+        background: #fff3d0;
+        color: #d97706;
+    }
+
+    .category-social {
+        background: #d7f9fb;
+        color: #0891b2;
+    }
+
+    .category-sports {
+        background: #fce7f3;
+        color: #db2777;
+    }
+
+    .category-arts {
+        background: #ffe7ef;
+        color: #be185d;
+    }
+
+    .category-default {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .meta-icon {
+        color: #8e7cff;
+        margin-right: 8px;
+    }
+
+    .seat-badge.available {
+        background: #d7f9fb;
+        color: #0891b2;
+    }
+
+    .seat-badge.full {
+        background: #ffe4e6;
+        color: #dc2626;
+    }
+
+    .seat-badge.low {
+        background: #fff7d6;
+        color: #a16207;
+    }
+
+    .status-badge.open {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .status-badge.full {
+        background: #ffe4e6;
+        color: #dc2626;
+    }
+
+    .status-badge.closed {
+        background: #f1f5f9;
+        color: #6b7280;
+    }
+
+    .status-badge.limited {
+        background: #fff7d6;
+        color: #a16207;
+    }
+
+    .status-badge i {
+        margin-right: 7px;
+    }
+
+
+    .monitor-action-btn {
+        min-height: 36px;
+        border-radius: 9px;
+        padding: 0 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        background: #f4f0ff;
+        border: 1px solid #c4b5fd;
+        color: #6f4ff2;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 950;
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .monitor-action-btn:hover {
+        background: #6f4ff2;
+        border-color: #6f4ff2;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .hidden-row {
+        display: none !important;
+    }
+
+    .empty-admin {
+        padding: 54px 20px;
+        text-align: center;
+        color: var(--admin-muted);
+    }
+
+    @media (max-width: 1200px) {
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .filter-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .monitor-table-panel {
+            overflow-x: auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .monitor-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .summary-grid,
+        .filter-row {
+            grid-template-columns: 1fr;
+        }
+
+        .monitor-title h1 {
+            font-size: 31px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="monitor-wrapper">
+
+    <div class="monitor-header">
+        <div class="monitor-header-icon">
+            <i class="bi bi-graph-up-arrow"></i>
+        </div>
+
+        <div class="monitor-title">
+            <h1>Event Monitoring</h1>
+            <p>Track live event status and registration trends</p>
+        </div>
+    </div>
+
+    <section class="summary-grid">
+        <div class="summary-card purple">
+            <div class="summary-main">
+                <div class="summary-icon icon-purple">
+                    <i class="bi bi-calendar2-week"></i>
+                </div>
+
+                <div>
+                    <div class="summary-label">Total Events</div>
+                    <div class="summary-number">
+                        {% if total_events is not None %}
+                            {{ total_events }}
+                        {% else %}
+                            {{ events|length }}
+                        {% endif %}
+                    </div>
+                    <p class="summary-sub">All events in system</p>
+                </div>
+            </div>
+
+            <div class="sparkline">
+                <svg viewBox="0 0 220 80" preserveAspectRatio="none">
+                    <path d="M0,76 C25,70 35,50 52,42 C75,30 85,68 108,38 C125,15 139,48 160,24 C180,2 195,22 220,5" fill="none" stroke="#8e7cff" stroke-width="3"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="summary-card green">
+            <div class="summary-main">
+                <div class="summary-icon icon-green">
+                    <i class="bi bi-bullseye"></i>
+                </div>
+
+                <div>
+                    <div class="summary-label">Open Events</div>
+                    <div class="summary-number">{{ open_events|default:"0" }}</div>
+                    <p class="summary-sub">Currently accepting registrations</p>
+                </div>
+            </div>
+
+            <div class="sparkline">
+                <svg viewBox="0 0 220 80" preserveAspectRatio="none">
+                    <path d="M0,72 C25,54 42,76 60,36 C79,3 102,70 128,45 C151,22 160,65 180,20 C195,5 205,8 220,7" fill="none" stroke="#16a34a" stroke-width="3"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="summary-card blue">
+            <div class="summary-main">
+                <div class="summary-icon icon-blue">
+                    <i class="bi bi-people"></i>
+                </div>
+
+                <div>
+                    <div class="summary-label">Total Registered</div>
+                    <div class="summary-number">{{ total_registered|default:"0" }}</div>
+                    <p class="summary-sub">Total registrations received</p>
+                </div>
+            </div>
+
+            <div class="sparkline">
+                <svg viewBox="0 0 220 80" preserveAspectRatio="none">
+                    <path d="M0,76 C24,60 38,62 58,38 C78,18 94,78 118,44 C137,16 150,70 170,24 C190,3 202,8 220,8" fill="none" stroke="#3b82f6" stroke-width="3"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="summary-card red">
+            <div class="summary-main">
+                <div class="summary-icon icon-red">
+                    <i class="bi bi-person-x"></i>
+                </div>
+
+                <div>
+                    <div class="summary-label">Full Events</div>
+                    <div class="summary-number">{{ full_events|default:"0" }}</div>
+                    <p class="summary-sub">No seats remaining</p>
+                </div>
+            </div>
+
+            <div class="sparkline">
+                <svg viewBox="0 0 220 80" preserveAspectRatio="none">
+                    <path d="M0,76 C20,68 35,28 54,55 C76,82 88,18 110,40 C132,65 142,10 166,28 C188,45 192,6 220,5" fill="none" stroke="#fb7185" stroke-width="3"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section class="filter-panel">
+        <div class="filter-row">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="monitorSearch" class="filter-control" placeholder="Search event name...">
+            </div>
+
+            <div class="select-box">
+                <i class="bi bi-grid-3x3-gap"></i>
+                <select id="monitorCategory" class="filter-control">
+                    <option value="">All Categories</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="seminar">Seminar</option>
+                    <option value="social">Social</option>
+                    <option value="sports">Sports</option>
+                    <option value="technology">Technology</option>
+                    <option value="arts">Arts</option>
+                </select>
+            </div>
+
+            <div class="select-box">
+                <i class="bi bi-filter-left"></i>
+                <select id="monitorStatus" class="filter-control">
+                    <option value="">All Status</option>
+                    <option value="open">Open</option>
+                    <option value="full">Full</option>
+                    <option value="closed">Closed</option>
+                </select>
+            </div>
+
+            <button type="button" id="monitorFilterBtn" class="filter-btn">
+                <i class="bi bi-search"></i>
+                Search
+            </button>
+        </div>
+    </section>
+
+    <section class="monitor-table-panel">
+        <table class="monitor-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Event Name</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Venue</th>
+                    <th>Registered</th>
+                    <th>Max Seats</th>
+                    <th>Seats Left</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% if events %}
+                    {% for event in events %}
+                        <tr class="monitor-row"
+                            data-title="{{ event.title|lower }}"
+                            data-category="{{ event.category|lower }}"
+                            data-status="{% if event.status == 'Closed' or event.status == 'closed' %}closed{% elif event.seats_left <= 0 %}full{% else %}open{% endif %}">
+
+                            <td>{{ forloop.counter }}</td>
+
+                            <td class="event-title-cell">{{ event.title }}</td>
+
+                            <td>
+                                <span class="category-badge
+                                    {% if event.category == 'Workshop' %}category-workshop
+                                    {% elif event.category == 'Technology' or event.category == 'Technology & Innovation' %}category-technology
+                                    {% elif event.category == 'Seminar' %}category-seminar
+                                    {% elif event.category == 'Social' %}category-social
+                                    {% elif event.category == 'Sports' or event.category == 'Sports & Fitness' %}category-sports
+                                    {% elif event.category == 'Arts' %}category-arts
+                                    {% else %}category-default{% endif %}">
+                                    {{ event.category }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <i class="bi bi-calendar2-week meta-icon"></i>
+                                {{ event.event_date|date:"d M Y" }}
+                            </td>
+
+                            <td>
+                                <i class="bi bi-clock meta-icon"></i>
+                                {{ event.event_time|time:"g:i A" }}
+                            </td>
+
+                            <td>
+                                <i class="bi bi-geo-alt meta-icon"></i>
+                                {{ event.venue }}
+                            </td>
+
+                            <td>{{ event.registration_count }}</td>
+
+                            <td>{{ event.max_participants }}</td>
+
+                            <td>
+                                {% if event.seats_left <= 0 %}
+                                    <span class="seat-badge full">Full</span>
+                                {% elif event.seats_left <= 5 %}
+                                    <span class="seat-badge low">{{ event.seats_left }} left</span>
+                                {% else %}
+                                    <span class="seat-badge available">{{ event.seats_left }} left</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if event.status == 'Closed' or event.status == 'closed' %}
+                                    <span class="status-badge closed">
+                                        <i class="bi bi-dash-circle-fill"></i>
+                                        Closed
+                                    </span>
+                                {% elif event.seats_left <= 0 %}
+                                    <span class="status-badge full">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                        Full
+                                    </span>
+                                {% elif event.seats_left <= 5 %}
+                                    <span class="status-badge limited">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        Limited
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge open">
+                                        <i class="bi bi-check-circle"></i>
+                                        Open
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <a href="{% url 'admin_event_detail' event.id %}" class="monitor-action-btn" title="View Event Detail">
+                                    <i class="bi bi-eye"></i>
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="11">
+                            <div class="empty-admin">
+                                <i class="bi bi-calendar-x fs-2 d-block mb-2"></i>
+                                No monitoring records available.
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </section>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const monitorSearch = document.getElementById("monitorSearch");
+    const monitorCategory = document.getElementById("monitorCategory");
+    const monitorStatus = document.getElementById("monitorStatus");
+    const monitorFilterBtn = document.getElementById("monitorFilterBtn");
+    const monitorRows = document.querySelectorAll(".monitor-row");
+
+    function normaliseCategory(category) {
+        category = category.toLowerCase();
+
+        if (category.includes("technology")) return "technology";
+        if (category.includes("sports")) return "sports";
+        if (category.includes("workshop")) return "workshop";
+        if (category.includes("seminar")) return "seminar";
+        if (category.includes("social")) return "social";
+        if (category.includes("arts")) return "arts";
+
+        return category;
+    }
+
+    function filterMonitoringRows() {
+        const searchValue = monitorSearch.value.trim().toLowerCase();
+        const categoryValue = monitorCategory.value.trim().toLowerCase();
+        const statusValue = monitorStatus.value.trim().toLowerCase();
+
+        monitorRows.forEach(row => {
+            const title = row.dataset.title || "";
+            const category = normaliseCategory(row.dataset.category || "");
+            const status = row.dataset.status || "";
+
+            const matchSearch = !searchValue || title.includes(searchValue);
+            const matchCategory = !categoryValue || category === categoryValue;
+            const matchStatus = !statusValue || status === statusValue;
+
+            if (matchSearch && matchCategory && matchStatus) {
+                row.classList.remove("hidden-row");
+            } else {
+                row.classList.add("hidden-row");
+            }
+        });
+    }
+
+    monitorSearch.addEventListener("input", filterMonitoringRows);
+    monitorCategory.addEventListener("change", filterMonitoringRows);
+    monitorStatus.addEventListener("change", filterMonitoringRows);
+    monitorFilterBtn.addEventListener("click", filterMonitoringRows);
+</script>
+{% endblock %}

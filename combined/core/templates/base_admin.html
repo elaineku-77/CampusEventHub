@@ -1,0 +1,366 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Admin | CampusEventHub{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --admin-navy: #2c2d55;
+            --admin-dark: #202244;
+            --admin-gold: #f5c542;
+            --admin-purple: #6f4ff2;
+            --admin-purple-soft: #eeeaff;
+            --admin-green: #16a34a;
+            --admin-red: #ef4444;
+            --admin-blue: #2563eb;
+            --admin-text: #151a35;
+            --admin-muted: #667085;
+            --admin-border: #e6e9f4;
+            --admin-bg: #fbfbff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at 90% 20%, rgba(111,79,242,0.10), transparent 18%),
+                linear-gradient(135deg, #fbfbff 0%, #f6f7ff 100%);
+            color: var(--admin-text);
+            overflow-x: hidden;
+        }
+
+        .admin-topbar {
+            height: 64px;
+            background: var(--admin-navy);
+            color: white;
+            display: grid;
+            grid-template-columns: 260px 1fr 260px;
+            align-items: center;
+            padding: 0 64px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 10px 28px rgba(32, 34, 68, 0.18);
+        }
+
+        .admin-brand {
+            color: var(--admin-gold);
+            text-decoration: none;
+            font-size: 25px;
+            font-weight: 950;
+            letter-spacing: -0.6px;
+            white-space: nowrap;
+        }
+
+        .admin-brand span {
+            color: white;
+        }
+
+        .admin-nav {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            height: 100%;
+        }
+
+        .admin-nav a {
+            position: relative;
+            color: white;
+            text-decoration: none;
+            font-weight: 850;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            font-size: 15px;
+            opacity: 0.95;
+        }
+
+        .admin-nav a:hover,
+        .admin-nav a.active {
+            color: white;
+        }
+
+        .admin-nav a.active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 8px;
+            height: 3px;
+            border-radius: 999px;
+            background: var(--admin-gold);
+        }
+
+        .admin-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 16px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .admin-right a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .admin-name {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+        }
+
+        .admin-name i {
+            color: var(--admin-purple);
+        }
+
+        .admin-page {
+            padding-top: 64px;
+            min-height: 100vh;
+        }
+
+        .admin-content {
+            padding: 36px 64px 42px;
+        }
+
+
+
+        .admin-footer {
+            background: linear-gradient(135deg, #0c112f, #10143d);
+            color: white;
+            padding: 30px 64px 18px;
+            margin-top: 10px;
+            box-shadow: 0 -12px 30px rgba(21, 26, 53, 0.08);
+        }
+
+        .admin-footer-inner {
+            max-width: 1480px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1.2fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .admin-footer-brand {
+            font-size: 21px;
+            font-weight: 950;
+            letter-spacing: -0.4px;
+            margin-bottom: 8px;
+        }
+
+        .admin-footer-brand .brand-campus {
+            color: var(--admin-gold);
+        }
+
+        .admin-footer-brand .brand-eventhub {
+            color: white;
+        }
+
+        .admin-footer-text {
+            color: rgba(255,255,255,0.72);
+            font-size: 13px;
+            line-height: 1.7;
+            max-width: 440px;
+            margin: 0;
+        }
+
+        .admin-footer-heading {
+            font-size: 14px;
+            font-weight: 950;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .admin-footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 7px;
+        }
+
+        .admin-footer-links a,
+        .admin-footer-contact {
+            color: rgba(255,255,255,0.72);
+            font-size: 13px;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .admin-footer-links a:hover {
+            color: var(--admin-gold);
+            padding-left: 3px;
+        }
+
+        .admin-footer-contact {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .admin-footer-contact i {
+            color: var(--admin-gold);
+            margin-top: 2px;
+        }
+
+        .admin-footer-bottom {
+            max-width: 1480px;
+            margin: 24px auto 0;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.10);
+            color: rgba(255,255,255,0.56);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 992px) {
+            .admin-topbar {
+                height: auto;
+                min-height: 64px;
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 14px 24px;
+            }
+
+            .admin-nav {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 22px;
+            }
+
+            .admin-nav a {
+                height: auto;
+                padding: 6px 0;
+            }
+
+            .admin-nav a.active::after {
+                bottom: -3px;
+            }
+
+            .admin-right {
+                justify-content: flex-start;
+            }
+
+            .admin-page {
+                padding-top: 140px;
+            }
+
+            .admin-content {
+                padding: 24px 18px 36px;
+            }
+
+            .admin-footer {
+                padding: 26px 18px 16px;
+            }
+
+            .admin-footer-inner {
+                grid-template-columns: 1fr;
+                gap: 22px;
+            }
+
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<header class="admin-topbar">
+    <a href="/admin-dashboard/" class="admin-brand">
+        Campus<span>EventHub</span>
+    </a>
+
+    <nav class="admin-nav">
+        <a href="/admin-dashboard/" class="{% if request.path == '/admin-dashboard/' %}active{% endif %}">
+            Admin Dashboard
+        </a>
+
+        <a href="/admin-events/" class="{% if request.path == '/admin-events/' %}active{% endif %}">
+            Event Management
+        </a>
+
+        <a href="/admin-monitoring/" class="{% if request.path == '/admin-monitoring/' %}active{% endif %}">
+            Event Monitoring
+        </a>
+    </nav>
+
+    <div class="admin-right">
+       <a href="{% url 'admin_logout' %}">Logout</a>
+        <div class="admin-name">
+            <i class="bi bi-person-fill"></i>
+            <span>Admin</span>
+        </div>
+    </div>
+</header>
+
+<main class="admin-page">
+    <div class="admin-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</main>
+
+<footer class="admin-footer">
+    <div class="admin-footer-inner">
+        <div>
+            <div class="admin-footer-brand">
+                <span class="brand-campus">Campus</span><span class="brand-eventhub">EventHub</span>
+            </div>
+            <p class="admin-footer-text">
+                Admin centre for managing UM campus events, registrations, categories, and monitoring records.
+            </p>
+        </div>
+
+        <div>
+            <h6 class="admin-footer-heading">Admin Links</h6>
+            <ul class="admin-footer-links">
+                <li><a href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+                <li><a href="{% url 'admin_event_list' %}">Event Management</a></li>
+                <li><a href="{% url 'admin_event_monitoring' %}">Event Monitoring</a></li>
+                <li><a href="{% url 'add_event' %}">Create Event</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <h6 class="admin-footer-heading">System Support</h6>
+            <div class="admin-footer-contact">
+                <i class="bi bi-shield-check"></i>
+                <span>Manage event information securely through administrator access.</span>
+            </div>
+            <div class="admin-footer-contact">
+                <i class="bi bi-calendar-check"></i>
+                <span>Keep event details accurate for student browsing and registration.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-footer-bottom">
+        © 2026 WOC7014 Framework-Based Software Design and Development Group G. All rights reserved.
+    </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,739 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard | CampusEventHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-wrapper {
+        max-width: 1480px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 34px;
+    }
+
+    .dashboard-title {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .dashboard-title-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        background: var(--admin-purple-soft);
+        color: var(--admin-purple);
+        font-size: 30px;
+        flex: 0 0 auto;
+    }
+
+    .dashboard-title h1 {
+        font-size: 34px;
+        font-weight: 950;
+        letter-spacing: -0.7px;
+        color: var(--admin-text);
+        margin-bottom: 6px;
+    }
+
+    .dashboard-title p {
+        color: var(--admin-muted);
+        margin: 0;
+        font-size: 15px;
+    }
+
+    .create-btn {
+        min-height: 52px;
+        padding: 0 28px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--admin-gold), #ffdc5c);
+        color: #111;
+        text-decoration: none;
+        font-weight: 950;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 14px 30px rgba(245,197,66,0.25);
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .create-btn:hover {
+        color: #111;
+        transform: translateY(-2px);
+        box-shadow: 0 20px 38px rgba(245,197,66,0.34);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 28px;
+        margin-bottom: 26px;
+    }
+
+    .stat-card {
+        min-height: 166px;
+        border-radius: 18px;
+        border: 1px solid var(--admin-border);
+        background: white;
+        padding: 24px;
+        box-shadow: 0 14px 34px rgba(21, 26, 53, 0.06);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card.gold {
+        background: linear-gradient(135deg, #fffaf0, #ffffff);
+        border-color: #f5e6bd;
+    }
+
+    .stat-card.green {
+        background: linear-gradient(135deg, #effdf5, #ffffff);
+        border-color: #ccefdc;
+    }
+
+    .stat-card.blue {
+        background: linear-gradient(135deg, #eff6ff, #ffffff);
+        border-color: #d7e7ff;
+    }
+
+    .stat-card.purple {
+        background: linear-gradient(135deg, #f7f3ff, #ffffff);
+        border-color: #e8ddff;
+    }
+
+    .stat-content {
+        display: grid;
+        grid-template-columns: 64px 1fr;
+        gap: 22px;
+        align-items: center;
+    }
+
+    .stat-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 32px;
+    }
+
+    .icon-gold {
+        background: #ffd963;
+        color: #111;
+    }
+
+    .icon-green {
+        background: #8be8aa;
+        color: #111;
+    }
+
+    .icon-blue {
+        background: #93c5fd;
+        color: #111;
+    }
+
+    .icon-purple {
+        background: #a78bfa;
+        color: #111;
+    }
+
+    .stat-label {
+        color: var(--admin-text);
+        font-size: 16px;
+        font-weight: 950;
+        margin-bottom: 8px;
+    }
+
+    .stat-number {
+        color: var(--admin-text);
+        font-size: 40px;
+        line-height: 1;
+        font-weight: 950;
+        margin-bottom: 8px;
+    }
+
+    .stat-sub {
+        color: var(--admin-muted);
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .sparkline {
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        bottom: 16px;
+        height: 34px;
+    }
+
+    .sparkline svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    .dashboard-panel {
+        background: white;
+        border: 1px solid var(--admin-border);
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 14px 34px rgba(21, 26, 53, 0.06);
+        margin-bottom: 26px;
+    }
+
+    .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .panel-title h2 {
+        color: var(--admin-text);
+        font-size: 22px;
+        font-weight: 950;
+        margin: 0 0 6px;
+    }
+
+    .panel-title p {
+        color: var(--admin-muted);
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .panel-link {
+        min-height: 40px;
+        border-radius: 8px;
+        border: 1px solid var(--admin-border);
+        background: white;
+        color: var(--admin-text);
+        text-decoration: none;
+        font-weight: 900;
+        font-size: 13px;
+        padding: 0 18px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .panel-link:hover {
+        color: var(--admin-purple);
+        border-color: var(--admin-purple);
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .category-card {
+        min-height: 66px;
+        border-radius: 11px;
+        border: 1px solid var(--admin-border);
+        background: white;
+        padding: 13px 14px;
+        display: grid;
+        grid-template-columns: 38px 1fr 28px;
+        gap: 12px;
+        align-items: center;
+        box-shadow: 0 8px 22px rgba(21, 26, 53, 0.04);
+    }
+
+    .cat-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+    }
+
+    .cat-orange {
+        background: #fff0dd;
+        color: #ea7a1a;
+    }
+
+    .cat-purple {
+        background: #eeeaff;
+        color: var(--admin-purple);
+    }
+
+    .cat-green {
+        background: #e7f8ef;
+        color: var(--admin-green);
+    }
+
+    .cat-blue {
+        background: #eaf2ff;
+        color: var(--admin-blue);
+    }
+
+    .cat-cyan {
+        background: #e7fbff;
+        color: #0891b2;
+    }
+
+    .cat-pink {
+        background: #ffe7ef;
+        color: #db2777;
+    }
+
+    .cat-name {
+        font-size: 13px;
+        color: var(--admin-text);
+        font-weight: 950;
+        line-height: 1.25;
+    }
+
+    .cat-count {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid var(--admin-border);
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        color: #4b5563;
+        font-weight: 900;
+    }
+
+    .category-action {
+        text-align: center;
+    }
+
+    .table-box {
+        border: 1px solid var(--admin-border);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .admin-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .admin-table thead {
+        background: #fbfcff;
+    }
+
+    .admin-table th {
+        color: #27304a;
+        font-size: 12px;
+        font-weight: 950;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--admin-border);
+        white-space: nowrap;
+    }
+
+    .admin-table td {
+        color: var(--admin-text);
+        font-size: 13px;
+        font-weight: 700;
+        padding: 13px 18px;
+        border-bottom: 1px solid var(--admin-border);
+        vertical-align: middle;
+    }
+
+    .admin-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .admin-table tbody tr:hover {
+        background: #fbfcff;
+    }
+
+    .category-badge,
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 950;
+    }
+
+    .category-badge.workshop {
+        background: #fff0dd;
+        color: #cc650f;
+    }
+
+    .category-badge.seminar {
+        background: #eeeaff;
+        color: #5b3ee8;
+    }
+
+    .category-badge.social {
+        background: #e7f8ef;
+        color: #087c3a;
+    }
+
+    .category-badge.sports {
+        background: #eaf2ff;
+        color: #155bd5;
+    }
+
+    .category-badge.technology {
+        background: #e7fbff;
+        color: #087f95;
+    }
+
+    .category-badge.arts {
+        background: #ffe7ef;
+        color: #be185d;
+    }
+
+    .status-badge.open {
+        background: #dcfce7;
+        color: #087c3a;
+    }
+
+    .status-badge.full {
+        background: #ffe4e6;
+        color: #dc2626;
+    }
+
+    .status-badge.limited {
+        background: #fff7d6;
+        color: #a16207;
+    }
+
+    .status-badge.closed {
+        background: #ffe4e6;
+        color: #dc2626;
+    }
+
+    .table-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 18px 18px 0;
+        color: var(--admin-muted);
+        font-size: 13px;
+    }
+
+    .empty-admin {
+        padding: 40px 18px;
+        text-align: center;
+        color: var(--admin-muted);
+    }
+
+    @media (max-width: 1200px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .category-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+        }
+
+        .stats-grid,
+        .category-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .panel-header,
+        .table-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .table-box {
+            overflow-x: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-wrapper">
+
+    <div class="dashboard-header">
+        <div class="dashboard-title">
+            <div class="dashboard-title-icon">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </div>
+
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p>Here's what's happening with your events today.</p>
+            </div>
+        </div>
+
+        <a href="/admin-events/add/" class="create-btn">
+            <i class="bi bi-plus-lg"></i>
+            Create Event
+        </a>
+    </div>
+
+    <section class="stats-grid">
+
+        <div class="stat-card gold">
+            <div class="stat-content">
+                <div class="stat-icon icon-gold">
+                    <i class="bi bi-calendar2-check"></i>
+                </div>
+
+                <div>
+                    <div class="stat-label">Total Events</div>
+                    <div class="stat-number">
+                        {% if total_events is not None %}
+                            {{ total_events }}
+                        {% else %}
+                            {{ events|length }}
+                        {% endif %}
+                    </div>
+                    <p class="stat-sub">All events created</p>
+                </div>
+            </div>
+
+            <div class="sparkline">
+                <svg viewBox="0 0 260 40" preserveAspectRatio="none">
+                    <path d="M0,28 C18,25 28,32 45,27 C62,22 72,28 90,20 C106,12 116,29 134,24 C152,19 164,25 180,15 C198,3 214,10 230,17 C242,22 250,18 260,24" fill="none" stroke="#f2a900" stroke-width="2"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="stat-card green">
+            <div class="stat-content">
+                <div class="stat-icon icon-green">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+
+                <div>
+                    <div class="stat-label">Open Events</div>
+                    <div class="stat-number">{{ open_events|default:"0" }}</div>
+                    <p class="stat-sub">Currently open</p>
+                </div>
+            </div>
+
+            <div class="sparkline">
+                <svg viewBox="0 0 260 40" preserveAspectRatio="none">
+                    <path d="M0,30 C18,14 28,22 45,12 C62,4 72,18 90,18 C108,20 120,30 138,29 C158,27 166,14 186,12 C206,10 220,21 240,27 C250,31 254,25 260,27" fill="none" stroke="#16a34a" stroke-width="2"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="stat-card blue">
+            <div class="stat-content">
+                <div class="stat-icon icon-blue">
+                    <i class="bi bi-people"></i>
+                </div>
+
+                <div>
+                    <div class="stat-label">Total Registered</div>
+                    <div class="stat-number">{{ total_registered|default:"0" }}</div>
+                    <p class="stat-sub">Across all events</p>
+                </div>
+            </div>
+
+            <div class="sparkline">
+                <svg viewBox="0 0 260 40" preserveAspectRatio="none">
+                    <path d="M0,25 C22,20 26,30 48,26 C70,22 80,30 100,28 C122,26 130,38 150,31 C172,21 178,23 195,15 C214,5 224,17 242,24 C252,28 258,24 260,29" fill="none" stroke="#2563eb" stroke-width="2"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="stat-card purple">
+            <div class="stat-content">
+                <div class="stat-icon icon-purple">
+                    <i class="bi bi-star"></i>
+                </div>
+
+                <div>
+                    <div class="stat-label">Full Events</div>
+                    <div class="stat-number">{{ full_events|default:"0" }}</div>
+                    <p class="stat-sub">No seats available</p>
+                </div>
+            </div>
+
+            <div class="sparkline">
+                <svg viewBox="0 0 260 40" preserveAspectRatio="none">
+                    <path d="M0,18 C20,10 30,25 48,28 C66,33 74,22 92,16 C110,8 116,22 134,20 C152,18 160,4 178,16 C196,28 208,17 226,21 C242,24 248,19 260,22" fill="none" stroke="#755cf2" stroke-width="2"/>
+                </svg>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="dashboard-panel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <h2>Display Categories</h2>
+            </div>
+        </div>
+
+        <div class="category-grid">
+            <div class="category-card">
+                <div class="cat-icon cat-orange"><i class="bi bi-calendar2-event"></i></div>
+                <div class="cat-name">Workshop</div>
+                <div class="cat-count">{{ workshop_count|default:"1" }}</div>
+            </div>
+
+            <div class="category-card">
+                <div class="cat-icon cat-purple"><i class="bi bi-easel2"></i></div>
+                <div class="cat-name">Seminar</div>
+                <div class="cat-count">{{ seminar_count|default:"1" }}</div>
+            </div>
+
+            <div class="category-card">
+                <div class="cat-icon cat-green"><i class="bi bi-people"></i></div>
+                <div class="cat-name">Social</div>
+                <div class="cat-count">{{ social_count|default:"1" }}</div>
+            </div>
+
+            <div class="category-card">
+                <div class="cat-icon cat-blue"><i class="bi bi-people-fill"></i></div>
+                <div class="cat-name">Sports & Fitness</div>
+                <div class="cat-count">{{ sports_count|default:"1" }}</div>
+            </div>
+
+            <div class="category-card">
+                <div class="cat-icon cat-cyan"><i class="bi bi-braces"></i></div>
+                <div class="cat-name">Technology</div>
+                <div class="cat-count">{{ technology_count|default:"1" }}</div>
+            </div>
+
+            <div class="category-card">
+                <div class="cat-icon cat-pink"><i class="bi bi-palette"></i></div>
+                <div class="cat-name">Arts</div>
+                <div class="cat-count">{{ arts_count|default:"0" }}</div>
+            </div>
+        </div>
+
+        <div class="category-action">
+            <a href="/admin-events/" class="panel-link">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+                View All Categories
+            </a>
+        </div>
+    </section>
+
+    <section class="dashboard-panel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <h2>Recent Events</h2>
+                <p>Latest events created in your system</p>
+            </div>
+
+            <a href="/admin-events/" class="panel-link">
+                View All Events
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="table-box">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Event Name <i class="bi bi-chevron-expand ms-1"></i></th>
+                        <th>Date <i class="bi bi-chevron-expand ms-1"></i></th>
+                        <th>Time <i class="bi bi-chevron-expand ms-1"></i></th>
+                        <th>Registered <i class="bi bi-chevron-expand ms-1"></i></th>
+                        <th>Category <i class="bi bi-chevron-up ms-1"></i></th>
+                        <th>Status <i class="bi bi-chevron-expand ms-1"></i></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if events %}
+                        {% for event in events %}
+                            <tr>
+                                <td>{{ event.title }}</td>
+                                <td>{{ event.event_date|date:"M d, Y" }}</td>
+                                <td>{{ event.event_time|time:"g:i A" }}</td>
+                                <td>
+                                    {% if event.registration_count is not None %}
+                                        {{ event.registration_count }}
+                                    {% else %}
+                                        {{ event.registered_count|default:"0" }}
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <span class="category-badge
+                                        {% if event.category == 'Workshop' %}workshop
+                                        {% elif event.category == 'Seminar' %}seminar
+                                        {% elif event.category == 'Social' %}social
+                                        {% elif event.category == 'Sports & Fitness' %}sports
+                                        {% elif event.category == 'Technology' or event.category == 'Technology & Innovation' %}technology
+                                        {% elif event.category == 'Arts' %}arts
+                                        {% else %}workshop{% endif %}">
+                                        {{ event.category }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {% if event.status == 'Closed' or event.status == 'closed' %}
+                                        <span class="status-badge closed">Closed</span>
+                                    {% elif event.availability_class == 'full' %}
+                                        <span class="status-badge full">Full</span>
+                                    {% elif event.availability_class == 'limited' %}
+                                        <span class="status-badge limited">Limited</span>
+                                    {% else %}
+                                        <span class="status-badge open">Open</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-admin">
+                                    <i class="bi bi-calendar-x fs-2 d-block mb-2"></i>
+                                    No events available yet.
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <span>
+                Showing latest
+                {% if events %}
+                    {{ events|length }}
+                {% else %}
+                    0
+                {% endif %}
+                of
+                {% if total_events is not None %}
+                    {{ total_events }}
+                {% else %}
+                    {{ events|length }}
+                {% endif %}
+                events
+            </span>
+
+
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,878 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Events | CampusEventHub{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+<style>
+    :root {
+        --ev-navy: #071333;
+        --ev-navy-2: #111a48;
+        --ev-gold: #f5c542;
+        --ev-purple: #755cf2;
+        --ev-purple-2: #8e7cff;
+        --ev-green: #108c45;
+        --ev-red: #d9303e;
+        --ev-bg: #f8f9ff;
+        --ev-card: #ffffff;
+        --ev-text: #151a35;
+        --ev-muted: #667085;
+        --ev-border: #e6e9f4;
+    }
+
+    body {
+        background:
+            radial-gradient(circle at 8% 82%, rgba(245,197,66,0.10), transparent 18%),
+            radial-gradient(circle at 92% 14%, rgba(117,92,242,0.12), transparent 20%),
+            linear-gradient(135deg, #fbfbff 0%, #f4f6ff 100%);
+        overflow-x: hidden;
+    }
+
+    .events-page {
+        padding-top: 0 !important;
+    }
+
+    .events-container {
+        max-width: 1120px;
+    }
+
+    /* HERO */
+    .events-hero {
+        position: relative;
+        overflow: hidden;
+        min-height: 205px;
+        background:
+            radial-gradient(circle at 2% 90%, rgba(117,92,242,0.35), transparent 20%),
+            radial-gradient(circle at 86% 94%, rgba(117,92,242,0.28), transparent 18%),
+            linear-gradient(135deg, #071333 0%, #111a48 55%, #251d68 100%);
+        color: white;
+        padding: 34px 0 30px;
+        box-shadow: 0 18px 42px rgba(7,19,51,0.16);
+    }
+
+    .events-hero::before {
+        content: "";
+        position: absolute;
+        left: -72px;
+        bottom: -76px;
+        width: 240px;
+        height: 150px;
+        background: rgba(117,92,242,0.38);
+        border-radius: 50%;
+    }
+
+    .events-hero::after {
+        content: "";
+        position: absolute;
+        right: -78px;
+        bottom: -80px;
+        width: 230px;
+        height: 230px;
+        border-radius: 50%;
+        border: 1px solid rgba(117,92,242,0.55);
+        box-shadow: inset 0 0 0 32px rgba(117,92,242,0.08);
+    }
+
+    .hero-dots-left,
+    .hero-dots-right {
+        position: absolute;
+        width: 120px;
+        height: 70px;
+        background-image: radial-gradient(rgba(255,255,255,0.42) 2px, transparent 2px);
+        background-size: 18px 18px;
+        opacity: 0.7;
+    }
+
+    .hero-dots-left {
+        left: 36px;
+        top: 58px;
+    }
+
+    .hero-dots-right {
+        right: 74px;
+        top: 44px;
+    }
+
+    .hero-star {
+        position: absolute;
+        left: 31.5%;
+        top: 42px;
+        color: var(--ev-gold);
+        font-size: 18px;
+        animation: starFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes starFloat {
+        0%, 100% {
+            transform: translateY(0) rotate(0);
+        }
+
+        50% {
+            transform: translateY(-8px) rotate(14deg);
+        }
+    }
+
+    .events-hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 720px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .events-hero h1 {
+        font-size: 32px;
+        line-height: 1.15;
+        font-weight: 950;
+        letter-spacing: -0.7px;
+        margin-bottom: 20px;
+    }
+
+    .events-hero h1 span {
+        color: var(--ev-gold);
+    }
+
+    .events-search {
+        display: grid;
+        grid-template-columns: 48px 1fr 200px 105px;
+        gap: 0;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 16px 34px rgba(0,0,0,0.22);
+        border: 5px solid rgba(255,255,255,0.08);
+    }
+
+    .events-search .search-icon {
+        display: grid;
+        place-items: center;
+        color: var(--ev-navy);
+        font-size: 19px;
+    }
+
+    .events-search input,
+    .events-search select {
+        height: 50px;
+        border: 0;
+        outline: 0;
+        background: white;
+        color: var(--ev-text);
+        font-size: 13px;
+    }
+
+    .events-search input {
+        padding: 0 12px;
+    }
+
+    .events-search select {
+        padding: 0 14px;
+        border-left: 1px solid var(--ev-border);
+        font-weight: 800;
+    }
+
+    .events-search button {
+        height: 50px;
+        border: 0;
+        background: linear-gradient(135deg, var(--ev-gold), #ffdd5e);
+        color: #111;
+        font-weight: 950;
+        transition: 0.2s ease;
+    }
+
+    .events-search button:hover {
+        filter: brightness(1.04);
+        transform: translateY(-1px);
+    }
+
+    /* FILTER BAR */
+    .filter-section {
+        background: rgba(255,255,255,0.78);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid #edf0fb;
+        box-shadow: 0 10px 24px rgba(7,19,51,0.04);
+    }
+
+    .filter-toolbar {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: nowrap;
+    }
+
+    .filter-left,
+    .sort-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: nowrap;
+    }
+
+    .filter-chip {
+        min-height: 36px;
+        padding: 8px 17px;
+        border-radius: 999px;
+        border: 1px solid #dcdff0;
+        background: white;
+        color: #2d3150;
+        font-size: 13px;
+        font-weight: 900;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .filter-chip:hover,
+    .filter-chip.active {
+        background: var(--ev-navy);
+        color: white;
+        border-color: var(--ev-navy);
+        transform: translateY(-1px);
+    }
+
+    .filter-chip i {
+        font-size: 14px;
+    }
+
+    .sort-label {
+        color: #343b5a;
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .sort-select {
+        width: 140px;
+        height: 40px;
+        border-radius: 8px;
+        border: 1px solid #dfe3f2;
+        background: white;
+        padding: 0 12px;
+        font-weight: 800;
+        color: var(--ev-text);
+        outline: none;
+        font-size: 13px;
+    }
+
+    .view-divider {
+        width: 1px;
+        height: 26px;
+        background: #d8ddeb;
+        margin: 0 4px;
+    }
+
+    .view-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .view-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        border: 1px solid #dfe3f2;
+        background: white;
+        color: #7a8195;
+        display: grid;
+        place-items: center;
+    }
+
+    .view-btn.active {
+        color: var(--ev-purple);
+        background: #f0edff;
+        border-color: #dcd6ff;
+    }
+
+    /* EVENT CARDS */
+    .event-list-section {
+        padding: 26px 0 24px;
+    }
+
+    .event-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+    }
+
+    .event-card {
+        height: 100%;
+        background: white;
+        border: 1px solid var(--ev-border);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(7,19,51,0.09);
+        transition: 0.22s ease;
+    }
+
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 44px rgba(7,19,51,0.14);
+    }
+
+    /* SMALLER IMAGE */
+    .event-image {
+        height: 96px;
+        background: #dfe5f2;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .event-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: 0.25s ease;
+    }
+
+    .event-card:hover .event-image img {
+        transform: scale(1.05);
+    }
+
+    .event-body {
+        padding: 11px 16px 0;
+    }
+
+    .event-category {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 9px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, var(--ev-purple), var(--ev-purple-2));
+        color: white;
+        font-size: 11px;
+        font-weight: 900;
+        margin-bottom: 7px;
+    }
+
+    .event-title {
+        color: var(--ev-navy);
+        font-size: 18px;
+        line-height: 1.15;
+        font-weight: 950;
+        margin-bottom: 9px;
+        min-height: 22px;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .event-meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px 14px;
+        margin-bottom: 7px;
+    }
+
+    .event-meta {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: #343b5a;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .event-meta i {
+        color: var(--ev-purple);
+        font-size: 14px;
+    }
+
+    .registered-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 9px 0;
+    }
+
+    .registered-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ev-green);
+        font-size: 12px;
+        font-weight: 950;
+    }
+
+    .registered-count.full {
+        color: var(--ev-red);
+    }
+
+    .seat-pill {
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 950;
+        border: 1px solid #bde8cc;
+        background: #e9f9ef;
+        color: var(--ev-green);
+        white-space: nowrap;
+    }
+
+    .seat-pill.limited {
+        background: #fff7dc;
+        border-color: #f5db87;
+        color: #b87900;
+    }
+
+    .seat-pill.full,
+    .seat-pill.closed {
+        background: #fff0f1;
+        border-color: #ffc7cc;
+        color: var(--ev-red);
+    }
+
+    .view-details-row {
+        border-top: 1px solid var(--ev-border);
+        padding: 10px 16px;
+        color: var(--ev-purple);
+        font-weight: 950;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .event-card:hover .view-details-row i {
+        transform: translateX(4px);
+    }
+
+    .empty-box {
+        background: white;
+        border: 1px dashed #cfd4e8;
+        border-radius: 16px;
+        padding: 58px 22px;
+        text-align: center;
+        color: var(--ev-muted);
+        box-shadow: 0 12px 26px rgba(7,19,51,0.06);
+    }
+
+    .empty-box i {
+        font-size: 44px;
+        color: var(--ev-purple);
+        margin-bottom: 14px;
+    }
+
+    .pagination-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 6px 0 0;
+    }
+
+    .pagination-modern {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .page-btn {
+        min-width: 74px;
+        height: 36px;
+        border-radius: 7px;
+        border: 1px solid #cdd3e6;
+        background: white;
+        color: #495168;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 850;
+        transition: 0.18s ease;
+    }
+
+    .page-btn:hover {
+        color: var(--ev-purple);
+        border-color: var(--ev-purple);
+    }
+
+    .page-btn.active {
+        min-width: 58px;
+        color: white;
+        background: linear-gradient(135deg, var(--ev-navy), #272064);
+        border-color: transparent;
+        box-shadow: 0 10px 22px rgba(7,19,51,0.25);
+    }
+
+    .page-btn.disabled {
+        opacity: 0.55;
+        pointer-events: none;
+    }
+    .events-footer {
+        background: linear-gradient(135deg, #071333, #101b49);
+        color: white;
+        padding: 20px 0 18px;
+        margin-top: 8px;
+    }
+
+    .footer-inner {
+        display: grid;
+        grid-template-columns: 230px 1fr auto;
+        gap: 34px;
+        align-items: center;
+    }
+
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .footer-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--ev-gold), #ffe28a);
+        color: #111;
+        display: grid;
+        place-items: center;
+        font-size: 21px;
+    }
+
+    .footer-brand h5 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 950;
+    }
+
+    .footer-brand h5 span {
+        color: var(--ev-gold);
+    }
+
+    .footer-text {
+        margin: 0;
+        color: rgba(255,255,255,0.80);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .footer-copy {
+        color: rgba(255,255,255,0.72);
+        font-size: 12px;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .social-row {
+        display: flex;
+        gap: 12px;
+    }
+
+    .social-row a {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.10);
+        color: white;
+        display: grid;
+        place-items: center;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .social-row a:hover {
+        background: var(--ev-gold);
+        color: #111;
+    }
+
+    @media (max-width: 991px) {
+        .events-page {
+            padding-top: 0 !important;
+        }
+
+        .events-search {
+            grid-template-columns: 48px 1fr;
+        }
+
+        .events-search select,
+        .events-search button {
+            grid-column: 1 / -1;
+        }
+
+        .events-search select {
+            border-left: 0;
+            border-top: 1px solid var(--ev-border);
+        }
+
+        .filter-toolbar {
+            padding: 16px 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-left,
+        .sort-right {
+            flex-wrap: wrap;
+        }
+
+        .footer-inner {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .footer-brand,
+        .social-row {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .events-hero {
+            padding: 30px 0 28px;
+        }
+
+        .events-hero h1 {
+            font-size: 28px;
+        }
+
+        .event-image {
+            height: 145px;
+        }
+
+        .event-meta-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .registered-row {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .pagination-modern {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="events-page">
+
+    <section class="events-hero">
+        <div class="hero-dots-left"></div>
+        <div class="hero-dots-right"></div>
+        <div class="hero-star">
+            <i class="bi bi-stars"></i>
+        </div>
+
+        <div class="container events-container">
+            <div class="events-hero-content" data-aos="fade-up">
+                <h1>
+                    Explore events in UM.<br>
+                    Find what <span>excites</span> you!
+                </h1>
+
+                <form method="get" action="{% url 'event_list' %}" class="events-search">
+                    <div class="search-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+
+                    <input type="text" name="q" value="{{ query }}" placeholder="Search events, categories, keywords...">
+
+                    <select name="category">
+                        <option value="">All Categories</option>
+                        {% for value, label in categories %}
+                            <option value="{{ value }}" {% if category_filter == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit">
+                        <i class="bi bi-search me-1"></i>
+                        Search
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="filter-section">
+        <div class="container events-container">
+            <div class="filter-toolbar">
+
+                <div class="filter-left">
+                    <a class="filter-chip active" href="{% url 'event_list' %}">
+                        <i class="bi bi-calendar2-event"></i>
+                        All Events
+                    </a>
+
+                    <a class="filter-chip" href="{% url 'event_list' %}?sort=date">
+                        <i class="bi bi-clock"></i>
+                        Upcoming
+                    </a>
+
+                    <a class="filter-chip" href="{% url 'event_list' %}">
+                        <i class="bi bi-calendar-week"></i>
+                        This Week
+                    </a>
+                </div>
+
+                <div class="sort-right">
+                    <form method="get" action="{% url 'event_list' %}" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="q" value="{{ query }}">
+                        <input type="hidden" name="category" value="{{ category_filter }}">
+
+                        <label class="sort-label">Sort by:</label>
+
+                        <select name="sort" class="sort-select" onchange="this.form.submit()">
+                            <option value="latest" {% if sort_by == "latest" %}selected{% endif %}>Relevance</option>
+                            <option value="date" {% if sort_by == "date" %}selected{% endif %}>Upcoming</option>
+                            <option value="seats" {% if sort_by == "seats" %}selected{% endif %}>Seats Left</option>
+                        </select>
+                    </form>
+
+                    <div class="view-divider"></div>
+
+                    <span class="sort-label">View:</span>
+
+                    <div class="view-buttons">
+                        <button type="button" class="view-btn active">
+                            <i class="bi bi-grid-3x3-gap-fill"></i>
+                        </button>
+                        <button type="button" class="view-btn">
+                            <i class="bi bi-list-ul"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="event-list-section">
+        <div class="container events-container">
+
+            {% if events %}
+                <div class="row g-4">
+                    {% for event in events %}
+                        <div class="col-md-6 col-xl-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}0">
+                            <a href="{% url 'event_detail' event.id %}" class="event-link">
+                                <article class="event-card">
+
+                                    <div class="event-image">
+                                        {% if event.event_image %}
+                                            <img src="{{ event.event_image.url }}" alt="{{ event.title }}">
+                                        {% else %}
+                                            <img src="{% static 'images/um.png' %}" alt="{{ event.title }}">
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="event-body">
+                                        <span class="event-category">
+                                            {{ event.category }}
+                                        </span>
+
+                                        <h3 class="event-title">
+                                            {{ event.title }}
+                                        </h3>
+
+                                        <div class="event-meta-grid">
+                                            <div class="event-meta">
+                                                <i class="bi bi-calendar2-event"></i>
+                                                {{ event.event_date|date:"M d" }}
+                                            </div>
+
+                                            <div class="event-meta">
+                                                <i class="bi bi-clock"></i>
+                                                {{ event.event_time|time:"g:i A" }}
+                                            </div>
+                                        </div>
+
+                                        <div class="registered-row">
+                                            <span class="registered-count {% if event.availability_class == 'full' %}full{% endif %}">
+                                                <i class="bi bi-people-fill"></i>
+                                                {{ event.registered_count }} / {{ event.max_participants }} registered
+                                            </span>
+
+                                            <span class="seat-pill {{ event.availability_class }}">
+                                                {% if event.availability_class == "open" %}
+                                                    {{ event.seats_left_count }} seats left
+                                                {% elif event.availability_class == "limited" %}
+                                                    {{ event.seats_left_count }} seats left
+                                                {% elif event.availability_class == "full" %}
+                                                    Full / Fully Booked
+                                                {% else %}
+                                                    Closed
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="view-details-row">
+                                        View Details
+                                        <i class="bi bi-arrow-right"></i>
+                                    </div>
+
+                                </article>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box" data-aos="fade-up">
+                    <i class="bi bi-calendar-x"></i>
+                    <h4 class="fw-bold">No events found</h4>
+                    <p class="mb-3">Try another keyword or category.</p>
+                    <a href="{% url 'event_list' %}" class="btn btn-warning fw-bold rounded-pill px-4">
+                        Clear Search
+                    </a>
+                </div>
+            {% endif %}
+
+            <div class="pagination-wrap">
+                <div class="pagination-modern">
+
+                    {% if events.has_previous %}
+                        <a class="page-btn" href="?page=1&q={{ query }}&category={{ category_filter }}&sort={{ sort_by }}">First</a>
+                        <a class="page-btn" href="?page={{ events.previous_page_number }}&q={{ query }}&category={{ category_filter }}&sort={{ sort_by }}">Previous</a>
+                    {% else %}
+                        <span class="page-btn disabled">First</span>
+                        <span class="page-btn disabled">Previous</span>
+                    {% endif %}
+
+                    <span class="page-btn active">
+                        {{ events.number|default:"1" }}
+                    </span>
+
+                    {% if events.has_next %}
+                        <a class="page-btn" href="?page={{ events.next_page_number }}&q={{ query }}&category={{ category_filter }}&sort={{ sort_by }}">Next</a>
+                        <a class="page-btn" href="?page={{ events.paginator.num_pages }}&q={{ query }}&category={{ category_filter }}&sort={{ sort_by }}">Last</a>
+                    {% else %}
+                        <span class="page-btn disabled">Next</span>
+                        <span class="page-btn disabled">Last</span>
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+    if (window.AOS) {
+        AOS.init({
+            duration: 650,
+            once: true,
+            offset: 40
+        });
+    }
+</script>
+{% endblock %}

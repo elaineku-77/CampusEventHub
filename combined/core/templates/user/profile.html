@@ -1,0 +1,1054 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile | CampusEventHub{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+<style>
+    :root {
+        --profile-navy: #071333;
+        --profile-navy-2: #111a48;
+        --profile-gold: #f5c542;
+        --profile-purple: #755cf2;
+        --profile-purple-2: #8e7cff;
+        --profile-green: #108c45;
+        --profile-red: #d9303e;
+        --profile-bg: #f8f9ff;
+        --profile-card: #ffffff;
+        --profile-text: #151a35;
+        --profile-muted: #667085;
+        --profile-border: #e6e9f4;
+        --profile-input: #fbfcff;
+    }
+
+    body {
+        background:
+            radial-gradient(circle at 7% 82%, rgba(245,197,66,0.11), transparent 18%),
+            radial-gradient(circle at 92% 28%, rgba(117,92,242,0.13), transparent 18%),
+            linear-gradient(135deg, #fbfbff 0%, #f4f6ff 100%);
+        overflow-x: hidden;
+    }
+
+    .profile-page {
+        padding: 108px 0 54px;
+        position: relative;
+        min-height: calc(100vh - 70px);
+    }
+
+    .profile-page::before {
+        content: "";
+        position: absolute;
+        left: -75px;
+        bottom: 85px;
+        width: 210px;
+        height: 210px;
+        border-radius: 50%;
+        background: rgba(245,197,66,0.14);
+        z-index: 0;
+    }
+
+    .profile-page::after {
+        content: "";
+        position: absolute;
+        right: -95px;
+        top: 210px;
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        background: rgba(117,92,242,0.13);
+        z-index: 0;
+    }
+
+    .profile-container {
+        max-width: 1180px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .profile-layout {
+        display: grid;
+        grid-template-columns: 350px minmax(0, 1fr);
+        gap: 28px;
+        align-items: start;
+    }
+
+    /* LEFT PROFILE CARD */
+    .profile-side-card {
+        background: white;
+        border: 1px solid var(--profile-border);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 18px 48px rgba(7,19,51,0.10);
+    }
+
+    .profile-cover {
+        position: relative;
+        min-height: 210px;
+        padding: 34px 26px 28px;
+        background:
+            radial-gradient(circle at 88% 12%, rgba(245,197,66,0.14), transparent 20%),
+            radial-gradient(circle at 10% 10%, rgba(117,92,242,0.28), transparent 22%),
+            linear-gradient(135deg, #111a48, #261a75);
+        text-align: center;
+        color: white;
+        overflow: hidden;
+    }
+
+    .profile-cover::before {
+        content: "";
+        position: absolute;
+        left: 24px;
+        top: 28px;
+        width: 94px;
+        height: 70px;
+        background-image: radial-gradient(rgba(255,255,255,0.16) 2px, transparent 2px);
+        background-size: 16px 16px;
+    }
+
+    .profile-cover::after {
+        content: "";
+        position: absolute;
+        right: -52px;
+        bottom: -52px;
+        width: 170px;
+        height: 170px;
+        border-radius: 50%;
+        background: rgba(117,92,242,0.16);
+    }
+
+    .avatar-wrap {
+        position: relative;
+        z-index: 2;
+        width: 104px;
+        height: 104px;
+        margin: 0 auto 18px;
+    }
+
+    .avatar-img,
+    .avatar-initial {
+        width: 104px;
+        height: 104px;
+        border-radius: 50%;
+        border: 5px solid white;
+        box-shadow: 0 16px 38px rgba(7,19,51,0.26);
+    }
+
+    .avatar-img {
+        object-fit: cover;
+        background: white;
+    }
+
+    .avatar-initial {
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--profile-gold), #ffdd5e);
+        color: var(--profile-navy);
+        font-size: 48px;
+        font-weight: 950;
+    }
+
+    .avatar-edit {
+        position: absolute;
+        right: -2px;
+        bottom: 8px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--profile-purple), var(--profile-purple-2));
+        color: white;
+        display: grid;
+        place-items: center;
+        border: 3px solid white;
+        font-size: 14px;
+    }
+
+    .profile-name {
+        position: relative;
+        z-index: 2;
+        font-size: 22px;
+        font-weight: 950;
+        margin-bottom: 6px;
+        letter-spacing: -0.3px;
+    }
+
+    .joined-date {
+        position: relative;
+        z-index: 2;
+        color: rgba(255,255,255,0.84);
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .profile-side-body {
+        padding: 24px;
+    }
+
+    .side-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--profile-text);
+        font-size: 17px;
+        font-weight: 950;
+        margin-bottom: 18px;
+    }
+
+    .side-section-title i {
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: #f0edff;
+        color: var(--profile-purple);
+    }
+
+    .overview-list {
+        margin-bottom: 24px;
+    }
+
+    .overview-item {
+        display: grid;
+        grid-template-columns: 32px 90px 1fr;
+        gap: 10px;
+        align-items: center;
+        padding: 13px 0;
+        border-bottom: 1px solid var(--profile-border);
+        color: var(--profile-text);
+        font-size: 13px;
+    }
+
+    .overview-item:last-child {
+        border-bottom: 0;
+    }
+
+    .overview-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+        background: #f5f6fb;
+        color: var(--profile-navy);
+        font-size: 15px;
+    }
+
+    .overview-label {
+        font-weight: 850;
+    }
+
+    .overview-value {
+        color: #303852;
+        font-weight: 600;
+        text-align: right;
+        word-break: break-word;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        justify-content: center;
+        padding: 5px 10px;
+        border-radius: 999px;
+        background: #dff8e9;
+        color: var(--profile-green);
+        font-size: 12px;
+        font-weight: 950;
+    }
+
+    .quick-title {
+        font-size: 15px;
+        font-weight: 950;
+        color: var(--profile-text);
+        margin-bottom: 12px;
+    }
+
+    .quick-link {
+        width: 100%;
+        min-height: 44px;
+        border-radius: 9px;
+        padding: 0 14px;
+        border: 0;
+        background: #f6f7fb;
+        color: var(--profile-text);
+        font-weight: 850;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-decoration: none;
+        margin-bottom: 9px;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .quick-link span {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .quick-link.active,
+    .quick-link:hover {
+        color: white;
+        background: linear-gradient(135deg, var(--profile-purple), var(--profile-purple-2));
+        box-shadow: 0 12px 26px rgba(117,92,242,0.22);
+    }
+
+    .side-help-box {
+        margin-top: 30px;
+        padding: 20px;
+        border-radius: 14px;
+        background:
+            radial-gradient(circle at 100% 50%, rgba(117,92,242,0.12), transparent 30%),
+            linear-gradient(135deg, #f4f1ff, #f8f9ff);
+    }
+
+    .side-help-box .help-row {
+        display: grid;
+        grid-template-columns: 42px 1fr 24px;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .help-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: #eeeaff;
+        color: var(--profile-purple);
+        font-size: 21px;
+    }
+
+    .side-help-box strong {
+        display: block;
+        color: var(--profile-text);
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .side-help-box p {
+        color: var(--profile-muted);
+        font-size: 13px;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .side-help-box .arrow {
+        color: var(--profile-purple);
+        font-size: 22px;
+    }
+
+    /* RIGHT MAIN CARD */
+    .profile-main-card {
+        background: rgba(255,255,255,0.96);
+        border: 1px solid rgba(255,255,255,0.86);
+        border-radius: 18px;
+        box-shadow: 0 18px 48px rgba(7,19,51,0.10);
+        padding: 34px 34px 38px;
+    }
+
+    .profile-tabs {
+        display: flex;
+        gap: 48px;
+        border-bottom: 1px solid var(--profile-border);
+        margin-bottom: 34px;
+    }
+
+    .profile-tab {
+        position: relative;
+        padding: 0 0 18px;
+        background: transparent;
+        border: 0;
+        color: #4b526b;
+        font-size: 15px;
+        font-weight: 950;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .profile-tab.active {
+        color: var(--profile-purple);
+    }
+
+    .profile-tab.active::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 3px;
+        background: var(--profile-purple);
+        border-radius: 999px;
+    }
+
+    .tab-panel {
+        display: none;
+    }
+
+    .tab-panel.active {
+        display: block;
+    }
+
+    .form-heading {
+        display: grid;
+        grid-template-columns: 54px 1fr;
+        gap: 16px;
+        align-items: center;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--profile-border);
+        margin-bottom: 26px;
+    }
+
+    .form-heading-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #eeeaff;
+        color: var(--profile-purple);
+        font-size: 26px;
+    }
+
+    .form-heading h2 {
+        margin: 0 0 6px;
+        color: var(--profile-text);
+        font-size: 24px;
+        font-weight: 950;
+    }
+
+    .form-heading p {
+        margin: 0;
+        color: var(--profile-muted);
+        font-size: 14px;
+    }
+
+    .profile-form label {
+        display: block;
+        color: var(--profile-text);
+        font-size: 13px;
+        font-weight: 950;
+        margin-bottom: 8px;
+    }
+
+    .input-wrap {
+        position: relative;
+    }
+
+    .input-wrap i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #596075;
+        z-index: 2;
+    }
+
+    .profile-form input[type="text"],
+    .profile-form input[type="email"],
+    .profile-form input[type="password"],
+    .profile-form input[type="tel"],
+    .readonly-field {
+        width: 100%;
+        height: 52px;
+        border: 1px solid #dfe3f2;
+        border-radius: 9px;
+        background: var(--profile-input);
+        padding: 12px 14px 12px 46px;
+        color: var(--profile-text);
+        font-size: 14px;
+        outline: 0;
+        transition: 0.18s ease;
+    }
+
+    .readonly-field {
+        display: flex;
+        align-items: center;
+        color: #303852;
+    }
+
+    .profile-form input:focus {
+        border-color: var(--profile-purple);
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(117,92,242,0.12);
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .upload-wrap {
+        border: 1.5px dashed #cfd3e6;
+        border-radius: 14px;
+        min-height: 98px;
+        background: #fbfcff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 18px 20px;
+        position: relative;
+        transition: 0.18s ease;
+        overflow: hidden;
+    }
+
+    .upload-wrap:hover {
+        border-color: var(--profile-purple);
+        background: #ffffff;
+    }
+
+    .upload-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .upload-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #eeeaff;
+        color: var(--profile-purple);
+        font-size: 24px;
+    }
+
+    .upload-text strong {
+        display: block;
+        font-size: 15px;
+        color: var(--profile-text);
+        margin-bottom: 5px;
+    }
+
+    .upload-text span {
+        color: var(--profile-muted);
+        font-size: 13px;
+    }
+
+    .browse-fake {
+        min-width: 86px;
+        height: 42px;
+        border-radius: 8px;
+        border: 1px solid #d9d4ff;
+        color: var(--profile-purple);
+        font-weight: 950;
+        display: grid;
+        place-items: center;
+        background: #ffffff;
+    }
+
+    .upload-wrap input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .remove-picture-box {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--profile-muted);
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .action-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-top: 36px;
+    }
+
+    .save-btn {
+        min-width: 230px;
+        height: 54px;
+        border: 0;
+        border-radius: 9px;
+        background: linear-gradient(135deg, var(--profile-purple), var(--profile-purple-2));
+        color: white;
+        font-size: 16px;
+        font-weight: 950;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        box-shadow: 0 14px 30px rgba(117,92,242,0.24);
+        transition: 0.2s ease;
+    }
+
+    .save-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 38px rgba(117,92,242,0.32);
+    }
+
+    .safe-box {
+        min-width: 330px;
+        border-radius: 14px;
+        padding: 17px 20px;
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        gap: 12px;
+        background: linear-gradient(135deg, #f4f1ff, #f8f9ff);
+    }
+
+    .safe-box i {
+        color: var(--profile-purple);
+        font-size: 22px;
+    }
+
+    .safe-box strong {
+        display: block;
+        color: var(--profile-purple);
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+
+    .safe-box span {
+        color: #4c5369;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .password-note {
+        background: linear-gradient(135deg, #f4f1ff, #f8f9ff);
+        border: 1px solid #ebe8ff;
+        border-radius: 14px;
+        padding: 16px 18px;
+        color: #4c5369;
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 22px;
+    }
+
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 7px 0 0;
+        color: var(--profile-red);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .non-field-error {
+        background: #fff0f1;
+        color: var(--profile-red);
+        border: 1px solid #ffc7cc;
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 18px;
+        font-weight: 800;
+        font-size: 13px;
+    }
+
+    @media (max-width: 991px) {
+        .profile-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-page {
+            padding-top: 95px;
+        }
+
+        .action-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .save-btn,
+        .safe-box {
+            width: 100%;
+            min-width: auto;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .profile-main-card {
+            padding: 26px 22px;
+        }
+
+        .profile-tabs {
+            gap: 20px;
+            overflow-x: auto;
+        }
+
+        .overview-item {
+            grid-template-columns: 32px 1fr;
+        }
+
+        .overview-value {
+            grid-column: 2;
+            text-align: left;
+        }
+
+        .upload-wrap {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .browse-fake {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-page">
+    <div class="container profile-container">
+        <div class="profile-layout">
+
+            <!-- LEFT PROFILE SUMMARY -->
+            <aside class="profile-side-card" data-aos="fade-right">
+                <div class="profile-cover">
+                    <div class="avatar-wrap">
+                        {% if profile_user.profile_picture %}
+                            <img src="{{ profile_user.profile_picture.url }}" class="avatar-img" alt="{{ profile_user.full_name }}">
+                        {% else %}
+                            <div class="avatar-initial">
+                                {{ profile_user.full_name|first|upper }}
+                            </div>
+                        {% endif %}
+
+                        <div class="avatar-edit">
+                            <i class="bi bi-pencil-fill"></i>
+                        </div>
+                    </div>
+
+                    <h1 class="profile-name">{{ profile_user.full_name }}</h1>
+                    <p class="joined-date">Joined {{ profile_user.date_joined|date:'d M Y' }}</p>
+                </div>
+
+                <div class="profile-side-body">
+                    <div class="side-section-title">
+                        <i class="bi bi-person"></i>
+                        Account Overview
+                    </div>
+
+                    <div class="overview-list">
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-envelope"></i>
+                            </div>
+                            <div class="overview-label">Email</div>
+                            <div class="overview-value">{{ profile_user.email }}</div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-telephone"></i>
+                            </div>
+                            <div class="overview-label">Phone</div>
+                            <div class="overview-value">{{ profile_user.phone_number|default:'Not provided' }}</div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-calendar3"></i>
+                            </div>
+                            <div class="overview-label">Member Since</div>
+                            <div class="overview-value">{{ profile_user.date_joined|date:'d M Y' }}</div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div class="overview-label">Account Status</div>
+                            <div class="overview-value">
+                                <span class="status-pill">Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-title">Quick Links</div>
+
+                    <button type="button" class="quick-link js-profile-tab active" data-target="profile-panel">
+                        <span>
+                            <i class="bi bi-person"></i>
+                            Update Profile
+                        </span>
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+
+                    <button type="button" class="quick-link js-profile-tab" data-target="password-panel">
+                        <span>
+                            <i class="bi bi-lock"></i>
+                            Update Password
+                        </span>
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+
+                    <div class="side-help-box">
+                        <div class="help-row">
+                            <div class="help-icon">
+                                <i class="bi bi-calendar2-star"></i>
+                            </div>
+                            <div>
+                                <strong>Stay updated!</strong>
+                                <p>Manage your profile and get the most out of events.</p>
+                            </div>
+                            <div class="arrow">
+                                <i class="bi bi-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- RIGHT MAIN CONTENT -->
+            <main class="profile-main-card" data-aos="fade-left">
+
+                <div class="profile-tabs">
+                    <button type="button" class="profile-tab js-profile-tab active" data-target="profile-panel">
+                        <i class="bi bi-person-gear"></i>
+                        Update Profile
+                    </button>
+
+                    <button type="button" class="profile-tab js-profile-tab" data-target="password-panel">
+                        <i class="bi bi-lock"></i>
+                        Update Password
+                    </button>
+                </div>
+
+                <!-- UPDATE PROFILE PANEL -->
+                <section id="profile-panel" class="tab-panel active">
+                    <div class="form-heading">
+                        <div class="form-heading-icon">
+                            <i class="bi bi-person"></i>
+                        </div>
+
+                        <div>
+                            <h2>Update Profile</h2>
+                            <p>Keep your information up to date.</p>
+                        </div>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="non-field-error">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" class="profile-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="profile">
+
+                        <div class="form-group">
+                            <label for="{{ form.full_name.id_for_label }}">Full Name</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-person"></i>
+                                {{ form.full_name }}
+                            </div>
+                            {% if form.full_name.errors %}
+                                {{ form.full_name.errors }}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-envelope"></i>
+                                <div class="readonly-field">{{ profile_user.email }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-telephone"></i>
+                                {{ form.phone_number }}
+                            </div>
+                            {% if form.phone_number.errors %}
+                                {{ form.phone_number.errors }}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.profile_picture.id_for_label }}">Profile Picture</label>
+
+                            <div class="upload-wrap">
+                                <div class="upload-left">
+                                    <div class="upload-icon">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+
+                                    <div class="upload-text">
+                                        <strong>Choose a file or drag & drop</strong>
+                                        <span>JPG, PNG or GIF. Max size 2MB</span>
+                                    </div>
+                                </div>
+
+                                <div class="browse-fake">Browse</div>
+
+                                {{ form.profile_picture }}
+                            </div>
+
+                            {% if profile_user.profile_picture %}
+                                <div class="remove-picture-box">
+                                    {{ form.remove_profile_picture }}
+                                    <span>Remove current profile picture</span>
+                                </div>
+                            {% endif %}
+
+                            {% if form.profile_picture.errors %}
+                                {{ form.profile_picture.errors }}
+                            {% endif %}
+                        </div>
+
+                        <div class="action-row">
+                            <button type="submit" class="save-btn">
+                                <i class="bi bi-floppy"></i>
+                                Save Changes
+                            </button>
+
+                            <div class="safe-box">
+                                <i class="bi bi-shield-check"></i>
+                                <div>
+                                    <strong>Your information is safe</strong>
+                                    <span>We never share your personal details with anyone.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- UPDATE PASSWORD PANEL -->
+                <section id="password-panel" class="tab-panel">
+                    <div class="form-heading">
+                        <div class="form-heading-icon">
+                            <i class="bi bi-lock"></i>
+                        </div>
+
+                        <div>
+                            <h2>Update Password</h2>
+                            <p>Change your password securely.</p>
+                        </div>
+                    </div>
+
+                    <div class="password-note">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Enter your current password before setting a new password.
+                    </div>
+
+                    {% if password_form.non_field_errors %}
+                        <div class="non-field-error">
+                            {{ password_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <form method="post" class="profile-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="password">
+
+                        <div class="form-group">
+                            <label for="{{ password_form.current_password.id_for_label }}">Current Password</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-lock"></i>
+                                {{ password_form.current_password }}
+                            </div>
+                            {% if password_form.current_password.errors %}
+                                {{ password_form.current_password.errors }}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ password_form.new_password.id_for_label }}">New Password</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-shield-lock"></i>
+                                {{ password_form.new_password }}
+                            </div>
+
+                            {% if password_form.new_password.help_text %}
+                                <div class="small text-muted mt-2">
+                                    {{ password_form.new_password.help_text }}
+                                </div>
+                            {% endif %}
+
+                            {% if password_form.new_password.errors %}
+                                {{ password_form.new_password.errors }}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ password_form.confirm_password.id_for_label }}">Confirm New Password</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-check2-circle"></i>
+                                {{ password_form.confirm_password }}
+                            </div>
+                            {% if password_form.confirm_password.errors %}
+                                {{ password_form.confirm_password.errors }}
+                            {% endif %}
+                        </div>
+
+                        <div class="action-row">
+                            <button type="submit" class="save-btn">
+                                <i class="bi bi-shield-check"></i>
+                                Save Password
+                            </button>
+
+                            <div class="safe-box">
+                                <i class="bi bi-lock-fill"></i>
+                                <div>
+                                    <strong>Password security</strong>
+                                    <span>Use a strong password and do not share it with anyone.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+            </main>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+    if (window.AOS) {
+        AOS.init({
+            duration: 650,
+            once: true,
+            offset: 40
+        });
+    }
+
+    const tabButtons = document.querySelectorAll(".js-profile-tab");
+    const panels = document.querySelectorAll(".tab-panel");
+
+    function activateProfileTab(targetId) {
+        panels.forEach(panel => {
+            panel.classList.toggle("active", panel.id === targetId);
+        });
+
+        tabButtons.forEach(button => {
+            button.classList.toggle("active", button.dataset.target === targetId);
+        });
+    }
+
+    tabButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            activateProfileTab(this.dataset.target);
+        });
+    });
+
+    {% if active_tab == 'password' %}
+        activateProfileTab("password-panel");
+    {% else %}
+        activateProfileTab("profile-panel");
+    {% endif %}
+</script>
+{% endblock %}

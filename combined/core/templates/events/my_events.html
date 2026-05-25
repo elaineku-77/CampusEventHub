@@ -1,0 +1,751 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Events | CampusEventHub{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+<style>
+    :root {
+        --my-navy: #071333;
+        --my-navy-2: #111a48;
+        --my-gold: #f5c542;
+        --my-purple: #755cf2;
+        --my-purple-2: #8e7cff;
+        --my-green: #108c45;
+        --my-red: #d9303e;
+        --my-blue: #1677ff;
+        --my-orange: #f08a24;
+        --my-bg: #f8f9ff;
+        --my-card: #ffffff;
+        --my-text: #151a35;
+        --my-muted: #667085;
+        --my-border: #e6e9f4;
+    }
+
+    body {
+        background:
+            radial-gradient(circle at 8% 82%, rgba(245,197,66,0.10), transparent 18%),
+            radial-gradient(circle at 92% 14%, rgba(117,92,242,0.12), transparent 20%),
+            linear-gradient(135deg, #fbfbff 0%, #f4f6ff 100%);
+        overflow-x: hidden;
+    }
+
+    .my-events-page {
+        padding-top: 0 !important;
+    }
+
+    .my-container {
+        max-width: 1180px;
+    }
+
+    .my-hero {
+        position: relative;
+        overflow: hidden;
+        min-height: 210px;
+        margin-top: 0;
+        background:
+            radial-gradient(circle at 92% 90%, rgba(245,197,66,0.20), transparent 18%),
+            radial-gradient(circle at 82% 4%, rgba(117,92,242,0.28), transparent 20%),
+            linear-gradient(135deg, #071333 0%, #111a48 55%, #241b63 100%);
+        color: white;
+        padding: 46px 0 42px;
+        box-shadow: 0 18px 42px rgba(7,19,51,0.16);
+    }
+
+    .my-hero::before {
+        content: "";
+        position: absolute;
+        left: 34px;
+        top: 44px;
+        width: 120px;
+        height: 74px;
+        background-image: radial-gradient(rgba(255,255,255,0.35) 2px, transparent 2px);
+        background-size: 18px 18px;
+        opacity: 0.75;
+    }
+
+    .my-hero::after {
+        content: "";
+        position: absolute;
+        right: -55px;
+        bottom: -60px;
+        width: 210px;
+        height: 210px;
+        border-radius: 50%;
+        border: 5px solid rgba(245,197,66,0.75);
+    }
+
+    .hero-art {
+        position: absolute;
+        right: 230px;
+        bottom: 0;
+        width: 260px;
+        height: 150px;
+        opacity: 0.13;
+        background:
+            linear-gradient(transparent 20%, rgba(255,255,255,0.9) 21%, transparent 22%),
+            linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.9) 21%, transparent 22%);
+        background-size: 70px 50px;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .hero-icon {
+        width: 74px;
+        height: 74px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.10);
+        display: grid;
+        place-items: center;
+        color: var(--my-gold);
+        font-size: 35px;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+        animation: floatIcon 3.4s ease-in-out infinite;
+    }
+
+    @keyframes floatIcon {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-6px);
+        }
+    }
+
+    .hero-title h1 {
+        font-size: 38px;
+        line-height: 1.1;
+        font-weight: 950;
+        letter-spacing: -0.7px;
+        margin-bottom: 12px;
+    }
+
+    .hero-title p {
+        margin: 0;
+        color: rgba(255,255,255,0.84);
+        font-size: 16px;
+    }
+
+    .yellow-line {
+        width: 56px;
+        height: 4px;
+        background: var(--my-gold);
+        border-radius: 999px;
+        margin-top: 18px;
+    }
+
+    .stats-row {
+        margin-top: -38px;
+        position: relative;
+        z-index: 5;
+    }
+
+    .stat-card {
+        background: rgba(255,255,255,0.96);
+        border: 1px solid rgba(255,255,255,0.84);
+        border-radius: 16px;
+        padding: 20px 24px;
+        min-height: 94px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 16px 36px rgba(7,19,51,0.09);
+    }
+
+    .stat-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 25px;
+    }
+
+    .stat-purple {
+        background: #eeeaff;
+        color: var(--my-purple);
+    }
+
+    .stat-blue {
+        background: #e9f2ff;
+        color: var(--my-blue);
+    }
+
+    .stat-green {
+        background: #e7f8ef;
+        color: var(--my-green);
+    }
+
+    .stat-text span {
+        display: block;
+        color: var(--my-muted);
+        font-size: 14px;
+        font-weight: 800;
+        margin-bottom: 4px;
+    }
+
+    .stat-text strong {
+        display: block;
+        color: var(--my-text);
+        font-size: 24px;
+        font-weight: 950;
+        line-height: 1;
+    }
+
+    .stat-text small {
+        color: var(--my-text);
+        font-weight: 800;
+    }
+
+    .content-section {
+        padding: 34px 0 42px;
+    }
+
+    .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 22px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--my-text);
+        font-size: 23px;
+        font-weight: 950;
+        margin: 0;
+    }
+
+    .section-title i {
+        color: var(--my-navy);
+        font-size: 26px;
+    }
+
+    .sort-box {
+        min-width: 180px;
+        height: 42px;
+        border-radius: 8px;
+        border: 1px solid var(--my-border);
+        background: white;
+        color: var(--my-text);
+        padding: 0 14px;
+        font-weight: 800;
+        outline: 0;
+    }
+
+    .event-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .my-event-card {
+        height: 100%;
+        background: white;
+        border: 1px solid var(--my-border);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 14px 34px rgba(7,19,51,0.09);
+        transition: 0.22s ease;
+    }
+
+    .my-event-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 22px 46px rgba(7,19,51,0.14);
+    }
+
+    .event-image {
+        height: 150px;
+        position: relative;
+        overflow: hidden;
+        background: #dfe5f2;
+    }
+
+    .event-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: 0.25s ease;
+    }
+
+    .my-event-card:hover .event-image img {
+        transform: scale(1.05);
+    }
+
+    .image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 35%, rgba(7,19,51,0.38));
+    }
+
+    .event-body {
+        padding: 18px 20px 0;
+    }
+
+    .badge-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .category-badge,
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 950;
+        padding: 6px 12px;
+        line-height: 1;
+    }
+
+    .category-badge {
+        color: white;
+        background: linear-gradient(135deg, var(--my-purple), var(--my-purple-2));
+    }
+
+    .status-badge.open {
+        background: #dff8e9;
+        color: var(--my-green);
+    }
+
+    .status-badge.limited {
+        background: #fff4d4;
+        color: #b87900;
+    }
+
+    .status-badge.full,
+    .status-badge.closed {
+        background: #fff0f1;
+        color: var(--my-red);
+    }
+
+    .event-title {
+        color: var(--my-navy);
+        font-size: 18px;
+        line-height: 1.25;
+        font-weight: 950;
+        margin-bottom: 12px;
+        min-height: 44px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .event-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        color: #343b5a;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .event-meta-row span {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .event-meta-row i {
+        color: var(--my-orange);
+    }
+
+    .event-desc {
+        color: #485169;
+        font-size: 14px;
+        line-height: 1.6;
+        min-height: 46px;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .registered-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--my-muted);
+        font-size: 13px;
+        margin-bottom: 18px;
+    }
+
+    .registered-line i {
+        color: #22c55e;
+        font-size: 16px;
+    }
+
+    .event-actions {
+        border-top: 1px solid var(--my-border);
+        padding: 14px 20px 18px;
+    }
+
+    .details-btn {
+        min-height: 44px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--my-navy), #10286b);
+        color: white;
+        font-weight: 950;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        width: 100%;
+        transition: 0.2s ease;
+    }
+
+    .details-btn:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px rgba(7,19,51,0.22);
+    }
+
+    .empty-state {
+        background: white;
+        border: 1px dashed #cfd4e8;
+        border-radius: 18px;
+        padding: 64px 24px;
+        text-align: center;
+        box-shadow: 0 14px 34px rgba(7,19,51,0.07);
+    }
+
+    .empty-icon {
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 18px;
+        background: #eeeaff;
+        color: var(--my-purple);
+        font-size: 38px;
+    }
+
+    .empty-state h3 {
+        color: var(--my-text);
+        font-weight: 950;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: var(--my-muted);
+        margin-bottom: 22px;
+    }
+
+    .browse-btn {
+        min-height: 44px;
+        padding: 0 24px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--my-gold), #ffdd5e);
+        color: #111;
+        font-weight: 950;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .my-footer {
+        background: linear-gradient(135deg, #071333, #101b49);
+        color: white;
+        padding: 24px 0;
+        margin-top: 0;
+    }
+
+    .my-footer-inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        color: rgba(255,255,255,0.84);
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .footer-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--my-gold), #ffdd5e);
+        color: #111;
+        display: grid;
+        place-items: center;
+        font-size: 20px;
+        flex: 0 0 auto;
+    }
+
+    @media (max-width: 991px) {
+        .my-events-page {
+            padding-top: 0 !important;
+        }
+
+        .hero-content {
+            align-items: flex-start;
+        }
+
+        .section-head {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .sort-box {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .my-events-page {
+            padding-top: 0 !important;
+        }
+
+        .my-hero {
+            padding: 34px 0;
+        }
+
+        .hero-content {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .hero-title h1 {
+            font-size: 30px;
+        }
+
+        .stats-row {
+            margin-top: 22px;
+        }
+
+        .event-image {
+            height: 170px;
+        }
+
+        .my-footer-inner {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="my-events-page">
+
+    <section class="my-hero">
+        <div class="hero-art"></div>
+
+        <div class="container my-container">
+            <div class="hero-content" data-aos="fade-up">
+                <div class="hero-icon">
+                    <i class="bi bi-calendar-check-fill"></i>
+                </div>
+
+                <div class="hero-title">
+                    <h1>My Registered Events</h1>
+                    <p>All events you have signed up for</p>
+                    <div class="yellow-line"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-row">
+        <div class="container my-container">
+            <div class="row g-4 justify-content-center">
+
+                <div class="col-md-4" data-aos="fade-up">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-purple">
+                            <i class="bi bi-ticket-perforated"></i>
+                        </div>
+
+                        <div class="stat-text">
+                            <span>Total Registered</span>
+                            <strong>{{ registrations|length }}</strong>
+                            <small>Events</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="70">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-blue">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+
+                        <div class="stat-text">
+                            <span>My Event List</span>
+                            <strong>{{ registrations|length }}</strong>
+                            <small>Events</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="140">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-green">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+
+                        <div class="stat-text">
+                            <span>Registration Records</span>
+                            <strong>{{ registrations|length }}</strong>
+                            <small>Confirmed</small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <div class="container my-container">
+
+            <div class="section-head">
+                <h2 class="section-title">
+                    <i class="bi bi-calendar2-week"></i>
+                    Your Registered Events
+                </h2>
+
+                <select class="sort-box">
+                    <option>Upcoming First</option>
+                    <option>Latest Registered</option>
+                </select>
+            </div>
+
+            {% if registrations %}
+                <div class="row g-4">
+                    {% for registration in registrations %}
+                        {% with event=registration.event|default:registration %}
+                            <div class="col-md-6 col-xl-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}0">
+                                <article class="my-event-card">
+
+                                    <a href="{% url 'event_detail' event.id %}" class="event-link">
+                                        <div class="event-image">
+                                            {% if event.event_image %}
+                                                <img src="{{ event.event_image.url }}" alt="{{ event.title }}">
+                                            {% else %}
+                                                <img src="{% static 'images/um.png' %}" alt="{{ event.title }}">
+                                            {% endif %}
+                                            <div class="image-overlay"></div>
+                                        </div>
+                                    </a>
+
+                                    <div class="event-body">
+                                        <div class="badge-row">
+                                            <span class="category-badge">
+                                                {{ event.category }}
+                                            </span>
+
+                                            <span class="status-badge {{ event.availability_class }}">
+                                                {% if event.availability_class == "open" %}
+                                                    Open
+                                                {% elif event.availability_class == "limited" %}
+                                                    Few Seats
+                                                {% elif event.availability_class == "full" %}
+                                                    Full
+                                                {% else %}
+                                                    Closed
+                                                {% endif %}
+                                            </span>
+                                        </div>
+
+                                        <h3 class="event-title">
+                                            {{ event.title }}
+                                        </h3>
+
+                                        <div class="event-meta-row">
+                                            <span>
+                                                <i class="bi bi-calendar2-event"></i>
+                                                {{ event.event_date|date:"M d, Y" }}
+                                            </span>
+
+                                            <span>
+                                                <i class="bi bi-clock"></i>
+                                                {{ event.event_time|time:"g:i A" }}
+                                            </span>
+                                        </div>
+
+                                        <p class="event-desc">
+                                            {{ event.description|default:"No description provided."|truncatechars:120 }}
+                                        </p>
+
+                                        <div class="registered-line">
+                                            <i class="bi bi-check-circle-fill"></i>
+
+                                            {% if registration.registered_at %}
+                                                Registered on {{ registration.registered_at|date:"d M Y, g:i A" }}
+                                            {% else %}
+                                                Registered event
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="event-actions">
+                                        <a href="{% url 'event_detail' event.id %}" class="details-btn">
+                                            <i class="bi bi-eye"></i>
+                                            View Details
+                                        </a>
+                                    </div>
+
+                                </article>
+                            </div>
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state" data-aos="fade-up">
+                    <div class="empty-icon">
+                        <i class="bi bi-calendar-x"></i>
+                    </div>
+
+                    <h3>You have not registered for any events yet.</h3>
+                    <p>Browse upcoming events and sign up today.</p>
+
+                    <a href="{% url 'event_list' %}" class="browse-btn">
+                        <i class="bi bi-search"></i>
+                        Browse Events
+                    </a>
+                </div>
+            {% endif %}
+
+        </div>
+    </section>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+    if (window.AOS) {
+        AOS.init({
+            duration: 650,
+            once: true,
+            offset: 40
+        });
+    }
+</script>
+{% endblock %}

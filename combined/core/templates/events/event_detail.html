@@ -1,0 +1,836 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ event.title }} | CampusEventHub{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+<style>
+    :root {
+        --detail-navy: #081334;
+        --detail-navy-2: #121b49;
+        --detail-gold: #f5c542;
+        --detail-purple: #755cf2;
+        --detail-purple-2: #8e7cff;
+        --detail-green: #108c45;
+        --detail-red: #d9303e;
+        --detail-bg: #f8f9ff;
+        --detail-card: #ffffff;
+        --detail-text: #151a35;
+        --detail-muted: #667085;
+        --detail-border: #e6e9f4;
+    }
+
+    body {
+        background:
+            radial-gradient(circle at 8% 82%, rgba(245,197,66,0.10), transparent 17%),
+            radial-gradient(circle at 92% 16%, rgba(117,92,242,0.12), transparent 18%),
+            linear-gradient(135deg, #fbfbff 0%, #f4f6ff 100%);
+        overflow-x: hidden;
+    }
+
+    .detail-page {
+        padding: 28px 0 0 !important;
+    }
+
+    .detail-container {
+        max-width: 1180px;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 24px;
+        align-items: start;
+        margin-top: 0;
+    }
+
+    .detail-main {
+        min-width: 0;
+    }
+
+    .detail-hero,
+    .register-card {
+        margin-top: 0;
+    }
+
+    .detail-hero {
+        position: relative;
+        overflow: hidden;
+        min-height: 270px;
+        border-radius: 18px;
+        box-shadow: 0 18px 48px rgba(8,19,52,0.12);
+        background:
+            linear-gradient(90deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.88) 50%, rgba(255,255,255,0.34) 100%),
+            url("{% static 'images/um.png' %}") center/cover no-repeat;
+    }
+
+    .detail-hero img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.58;
+        filter: saturate(1.05) contrast(1.02);
+    }
+
+    .detail-hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 88% 78%, rgba(245,197,66,0.18), transparent 24%),
+            linear-gradient(90deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.88) 48%, rgba(255,255,255,0.36) 100%);
+    }
+
+    .detail-hero-content {
+        position: relative;
+        z-index: 2;
+        padding: 46px 42px;
+        color: var(--detail-text);
+        max-width: 560px;
+    }
+
+    .detail-hero h1 {
+        font-size: 42px;
+        line-height: 1.1;
+        font-weight: 950;
+        letter-spacing: -0.8px;
+        margin-bottom: 16px;
+        color: var(--detail-navy);
+        text-shadow: 0 2px 10px rgba(255,255,255,0.62);
+    }
+
+    .hero-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .hero-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 12px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 900;
+        background: rgba(255,255,255,0.84);
+        border: 1px solid rgba(8,19,52,0.12);
+        color: var(--detail-navy);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 8px 18px rgba(8,19,52,0.08);
+    }
+
+    .chip-category {
+        background: linear-gradient(135deg, var(--detail-gold), #ffe28a);
+        color: #111;
+        border: 0;
+    }
+
+    .chip-open {
+        color: var(--detail-navy);
+    }
+
+    .chip-open .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 0 4px rgba(34,197,94,0.16);
+    }
+
+    .hero-location {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        padding-top: 18px;
+        margin-top: 18px;
+        border-top: 1px solid rgba(8,19,52,0.12);
+        max-width: 360px;
+    }
+
+    .hero-location i {
+        color: var(--detail-gold);
+        font-size: 26px;
+    }
+
+    .hero-location span {
+        color: #3e465f;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .info-strip {
+        margin-top: 20px;
+        background: white;
+        border: 1px solid var(--detail-border);
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(8,19,52,0.08);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        overflow: hidden;
+    }
+
+    .info-item {
+        padding: 24px 22px;
+        display: grid;
+        grid-template-columns: 42px 1fr;
+        gap: 14px;
+        align-items: center;
+        border-right: 1px solid var(--detail-border);
+    }
+
+    .info-item:last-child {
+        border-right: 0;
+    }
+
+    .info-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        color: var(--detail-navy);
+        background: #f0edff;
+        font-size: 22px;
+    }
+
+    .info-label {
+        color: var(--detail-text);
+        font-size: 14px;
+        font-weight: 950;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        color: var(--detail-muted);
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .detail-card {
+        margin-top: 18px;
+        background: white;
+        border: 1px solid var(--detail-border);
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(8,19,52,0.07);
+        padding: 26px 28px;
+    }
+
+    .card-title-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .card-title-row i {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: #f0edff;
+        color: var(--detail-purple);
+        font-size: 18px;
+    }
+
+    .card-title-row h3 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 950;
+        color: var(--detail-text);
+    }
+
+    .location-text,
+    .about-text {
+        color: #3e465f;
+        font-size: 14px;
+        line-height: 1.8;
+        margin-bottom: 0;
+    }
+
+    .map-wrap {
+        position: relative;
+        margin-top: 18px;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid var(--detail-border);
+        height: 260px;
+        background: #dfe4f2;
+    }
+
+    .map-wrap iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+    }
+
+    .map-btn {
+        position: absolute;
+        left: 18px;
+        top: 18px;
+        z-index: 2;
+        padding: 9px 14px;
+        border-radius: 8px;
+        background: white;
+        color: #1677ff;
+        text-decoration: none;
+        font-weight: 900;
+        font-size: 13px;
+        box-shadow: 0 8px 22px rgba(8,19,52,0.12);
+    }
+
+    .tag-list {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .tag-pill {
+        padding: 8px 16px;
+        border-radius: 8px;
+        background: #f0edff;
+        color: #2d256b;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .side-column {
+        position: sticky;
+        top: 105px;
+    }
+
+    .register-card {
+        background: white;
+        border: 1px solid var(--detail-border);
+        border-radius: 16px;
+        box-shadow: 0 14px 34px rgba(8,19,52,0.08);
+        padding: 28px;
+        text-align: center;
+    }
+
+    .ticket-icon {
+        width: 114px;
+        height: 114px;
+        border-radius: 50%;
+        margin: 0 auto 22px;
+        display: grid;
+        place-items: center;
+        background:
+            radial-gradient(circle, rgba(245,197,66,0.18), rgba(245,197,66,0.04));
+        border: 1px solid #fff0c8;
+        color: #d89a00;
+        font-size: 56px;
+    }
+
+    .register-btn,
+    .registered-btn,
+    .closed-btn {
+        width: 100%;
+        min-height: 52px;
+        border-radius: 8px;
+        border: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 950;
+        transition: 0.2s ease;
+    }
+
+    .register-btn {
+        color: #111;
+        background: linear-gradient(135deg, var(--detail-gold), #ffd84f);
+        box-shadow: 0 12px 28px rgba(245,197,66,0.24);
+    }
+
+    .register-btn:hover {
+        color: #111;
+        transform: translateY(-2px);
+        box-shadow: 0 18px 36px rgba(245,197,66,0.32);
+    }
+
+    .registered-btn {
+        color: white;
+        background: linear-gradient(135deg, var(--detail-green), #16a34a);
+    }
+
+    .closed-btn {
+        color: var(--detail-red);
+        background: #fff0f1;
+        border: 1px solid #ffc7cc;
+    }
+
+    .side-divider {
+        height: 1px;
+        background: var(--detail-border);
+        margin: 24px 0;
+    }
+
+    .register-stat {
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        gap: 14px;
+        align-items: center;
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+    .register-stat i {
+        color: var(--detail-navy);
+        font-size: 24px;
+    }
+
+    .register-stat strong {
+        color: var(--detail-text);
+        font-size: 15px;
+        font-weight: 950;
+    }
+
+    .status-open {
+        color: var(--detail-green);
+    }
+
+    .status-limited {
+        color: #b87900;
+    }
+
+    .status-full,
+    .status-closed {
+        color: var(--detail-red);
+    }
+
+    .hint-box {
+        margin-top: 22px;
+        background: #f0edff;
+        color: #3d2bb3;
+        border-radius: 10px;
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .host-card {
+        margin-top: 18px;
+        background: white;
+        border: 1px solid var(--detail-border);
+        border-radius: 16px;
+        box-shadow: 0 14px 34px rgba(8,19,52,0.08);
+        padding: 24px;
+    }
+
+    .host-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--detail-text);
+        font-size: 18px;
+        font-weight: 950;
+        margin-bottom: 22px;
+    }
+
+    .host-title i {
+        color: var(--detail-navy);
+        font-size: 22px;
+    }
+
+    .host-body {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .host-logo {
+        width: 80px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: contain;
+        background: var(--detail-navy);
+        padding: 8px;
+        border: 1px solid var(--detail-border);
+    }
+
+    .host-name {
+        font-weight: 800;
+        color: var(--detail-text);
+    }
+
+    .host-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 22px;
+    }
+
+    .host-action-btn {
+        min-height: 44px;
+        border-radius: 8px;
+        border: 1px solid var(--detail-navy);
+        background: white;
+        color: var(--detail-navy);
+        font-weight: 900;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .host-action-btn.primary {
+        background: var(--detail-navy);
+        color: white;
+    }
+    .detail-footer {
+        margin-top: 36px;
+        background: linear-gradient(135deg, #081334, #101b49);
+        color: white;
+        padding: 18px 0;
+    }
+
+    .detail-footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .detail-footer-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: #3e465f;
+        font-size: 13px;
+    }
+
+    .detail-footer-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--detail-gold), #ffe28a);
+        color: #111;
+        font-size: 20px;
+    }
+
+    .footer-socials {
+        display: flex;
+        gap: 16px;
+    }
+
+    .footer-socials a {
+        color: #3e465f;
+        font-size: 18px;
+        transition: 0.2s ease;
+    }
+
+    .footer-socials a:hover {
+        color: var(--detail-gold);
+    }
+
+    @media (max-width: 991px) {
+        .detail-page {
+            padding: 24px 0 0 !important;
+        }
+
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .side-column {
+            position: static;
+        }
+
+        .info-strip {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .info-item:nth-child(2) {
+            border-right: 0;
+        }
+
+        .info-item:nth-child(1),
+        .info-item:nth-child(2) {
+            border-bottom: 1px solid var(--detail-border);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .detail-page {
+            padding-top: 18px !important;
+        }
+
+        .detail-hero-content {
+            padding: 34px 26px;
+        }
+
+        .detail-hero h1 {
+            font-size: 32px;
+        }
+
+        .info-strip {
+            grid-template-columns: 1fr;
+        }
+
+        .info-item {
+            border-right: 0;
+            border-bottom: 1px solid var(--detail-border);
+        }
+
+        .info-item:last-child {
+            border-bottom: 0;
+        }
+
+        .detail-card {
+            padding: 22px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="detail-page">
+    <div class="container detail-container">
+        <div class="detail-grid">
+
+            <main class="detail-main">
+
+                <!-- HERO -->
+                <section class="detail-hero" data-aos="fade-up">
+                    {% if event.event_image %}
+                        <img src="{{ event.event_image.url }}" alt="{{ event.title }}">
+                    {% endif %}
+
+                    <div class="detail-hero-content">
+                        <h1>{{ event.title }}</h1>
+
+                        <div class="hero-badges">
+                            <span class="hero-chip chip-category">
+                                {{ event.category }}
+                            </span>
+
+                            <span class="hero-chip chip-open">
+                                <span class="dot"></span>
+                                {{ event.availability_label|default:"Open for registration" }}
+                            </span>
+                        </div>
+
+                        <div class="hero-location">
+                            <i class="bi bi-bank"></i>
+                            <span>
+                                {{ event.venue|default:"Universiti Malaya" }}
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- INFO STRIP -->
+                <section class="info-strip" data-aos="fade-up" data-aos-delay="80">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="bi bi-calendar2-week"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Date & Time</div>
+                            <div class="info-value">
+                                {{ event.event_date|date:"l, d F Y" }}<br>
+                                {{ event.event_time|time:"g:i A" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="bi bi-tag"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Event Category</div>
+                            <div class="info-value">{{ event.category }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Location</div>
+                            <div class="info-value">{{ event.venue }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Hosted by</div>
+                            <div class="info-value">Universiti Malaya</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- LOCATION -->
+                <section class="detail-card" data-aos="fade-up">
+                    <div class="card-title-row">
+                        <i class="bi bi-geo-alt"></i>
+                        <h3>Location</h3>
+                    </div>
+
+                    <p class="location-text">{{ event.venue }}</p>
+
+                    <div class="map-wrap">
+                        <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query={{ event.venue|urlencode }}" target="_blank">
+                            Open in Maps <i class="bi bi-box-arrow-up-right ms-1"></i>
+                        </a>
+
+                        <iframe
+                            loading="lazy"
+                            src="https://maps.google.com/maps?q={{ event.venue|urlencode }}&output=embed">
+                        </iframe>
+                    </div>
+                </section>
+
+                <!-- ABOUT -->
+                <section class="detail-card" data-aos="fade-up">
+                    <div class="card-title-row">
+                        <i class="bi bi-file-text"></i>
+                        <h3>About This Event</h3>
+                    </div>
+
+                    <div class="about-text">
+                        {{ event.description|linebreaks }}
+                    </div>
+                </section>
+
+                <!-- TAGS -->
+                <section class="detail-card" data-aos="fade-up">
+                    <div class="card-title-row">
+                        <i class="bi bi-tags"></i>
+                        <h3>Tags</h3>
+                    </div>
+
+                    <div class="tag-list">
+                        <span class="tag-pill">{{ event.category }}</span>
+                        <span class="tag-pill">{{ event.availability_label|default:"Open" }}</span>
+                        <span class="tag-pill">Student Event</span>
+                        <span class="tag-pill">Campus Event</span>
+                        <span class="tag-pill">Universiti Malaya</span>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- SIDE PANEL -->
+            <aside class="side-column">
+
+                <section class="register-card" data-aos="fade-left">
+                    <div class="ticket-icon">
+                        <i class="bi bi-ticket-perforated"></i>
+                    </div>
+
+                    {% if already_registered %}
+                        <a href="{% url 'my_events' %}" class="registered-btn">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Already Registered
+                        </a>
+                    {% elif event.availability_class == "open" or event.availability_class == "limited" %}
+                        <a href="{% url 'register_event' event.id %}" class="register-btn">
+                            Register Now!
+                        </a>
+                    {% else %}
+                        <span class="closed-btn">
+                            <i class="bi bi-x-circle-fill"></i>
+                            Registration Closed
+                        </span>
+                    {% endif %}
+
+                    <div class="side-divider"></div>
+
+                    <div class="register-stat">
+                        <i class="bi bi-people"></i>
+                        <strong>{{ event.registered_count }}/{{ event.max_participants }} registered</strong>
+                    </div>
+
+                    <div class="register-stat">
+                        <i class="bi bi-chair"></i>
+                        <strong>{{ event.seats_left_count }} seats left</strong>
+                    </div>
+
+                    <div class="register-stat">
+                        <i class="bi bi-check-circle status-{{ event.availability_class }}"></i>
+                        <strong>
+                            Status:
+                            <span class="status-{{ event.availability_class }}">
+                                {{ event.availability_label }}
+                            </span>
+                        </strong>
+                    </div>
+
+                    <div class="hint-box">
+                        <i class="bi bi-info-circle fs-4"></i>
+                        <span>
+                            Hurry up! Seats are limited.
+                        </span>
+                    </div>
+                </section>
+
+                <section class="host-card" data-aos="fade-left" data-aos-delay="80">
+                    <div class="host-title">
+                        <i class="bi bi-bank"></i>
+                        Hosted by
+                    </div>
+
+                    <div class="host-body">
+                        <img src="{% static 'images/um.png' %}" class="host-logo" alt="Universiti Malaya">
+                        <div class="host-name">Universiti Malaya</div>
+                    </div>
+
+                    <div class="host-actions">
+                        <a href="#" class="host-action-btn">
+                            <i class="bi bi-envelope"></i>
+                            Contact
+                        </a>
+
+                        <a href="#" class="host-action-btn primary">
+                            <i class="bi bi-person-plus"></i>
+                            Follow
+                        </a>
+                    </div>
+                </section>
+
+            </aside>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+    if (window.AOS) {
+        AOS.init({
+            duration: 700,
+            once: true,
+            offset: 50
+        });
+    }
+</script>
+{% endblock %}
