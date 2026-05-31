@@ -1,0 +1,811 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Event Management | CampusEventHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .event-management-wrapper {
+        max-width: 1480px;
+        margin: 0 auto;
+    }
+
+    .management-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 30px;
+    }
+
+    .management-title h1 {
+        font-size: 38px;
+        font-weight: 950;
+        letter-spacing: -0.8px;
+        color: var(--admin-text);
+        margin-bottom: 8px;
+    }
+
+    .management-title p {
+        color: var(--admin-muted);
+        font-size: 16px;
+        margin: 0;
+    }
+
+    .add-event-btn {
+        min-height: 52px;
+        padding: 0 28px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #0d6efd, #004be0);
+        color: white;
+        text-decoration: none;
+        font-weight: 950;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 14px 30px rgba(13, 110, 253, 0.25);
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .add-event-btn:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 20px 38px rgba(13, 110, 253, 0.34);
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .summary-card {
+        min-height: 116px;
+        background: white;
+        border: 1px solid var(--admin-border);
+        border-radius: 14px;
+        padding: 22px;
+        box-shadow: 0 14px 34px rgba(21, 26, 53, 0.06);
+        display: grid;
+        grid-template-columns: 64px 1fr;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .summary-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        font-size: 30px;
+    }
+
+    .icon-purple {
+        background: #eeeaff;
+        color: #6f4ff2;
+    }
+
+    .icon-green {
+        background: #e7f8ef;
+        color: #16a34a;
+    }
+
+    .icon-red {
+        background: #ffe7ef;
+        color: #ef4444;
+    }
+
+    .summary-label {
+        color: var(--admin-muted);
+        font-size: 14px;
+        font-weight: 850;
+        margin-bottom: 6px;
+    }
+
+    .summary-number {
+        color: var(--admin-text);
+        font-size: 30px;
+        line-height: 1;
+        font-weight: 950;
+        margin-bottom: 6px;
+    }
+
+    .summary-sub {
+        color: var(--admin-muted);
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .event-table-panel {
+        background: white;
+        border: 1px solid var(--admin-border);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 16px 38px rgba(21, 26, 53, 0.07);
+    }
+
+    .filter-row {
+        display: grid;
+        grid-template-columns: minmax(260px, 1.6fr) 180px 160px 190px 100px 54px;
+        gap: 14px;
+        margin-bottom: 22px;
+        align-items: center;
+    }
+
+    .filter-control {
+        height: 44px;
+        border: 1px solid #dfe3f2;
+        border-radius: 8px;
+        background: white;
+        color: var(--admin-text);
+        padding: 0 14px;
+        font-size: 14px;
+        outline: none;
+        font-weight: 700;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #667085;
+        font-size: 18px;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding-left: 48px;
+    }
+
+    .reset-btn,
+    .filter-icon-btn {
+        height: 44px;
+        border-radius: 8px;
+        border: 1px solid #dfe3f2;
+        background: white;
+        color: #4b5563;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 850;
+        text-decoration: none;
+        transition: 0.2s ease;
+        cursor: pointer;
+    }
+
+    .reset-btn:hover,
+    .filter-icon-btn:hover {
+        color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .table-box {
+        border: 1px solid var(--admin-border);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .event-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .event-table thead {
+        background: #fbfcff;
+    }
+
+    .event-table th {
+        color: #56607a;
+        font-size: 13px;
+        font-weight: 950;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--admin-border);
+        white-space: nowrap;
+    }
+
+    .event-table td {
+        color: var(--admin-text);
+        font-size: 14px;
+        font-weight: 750;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--admin-border);
+        vertical-align: middle;
+    }
+
+    .event-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .event-table tbody tr:hover {
+        background: #fbfcff;
+    }
+
+    .event-name-cell {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .event-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+        font-weight: 950;
+        flex: 0 0 auto;
+    }
+
+    .avatar-1 {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .avatar-2 {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .avatar-3 {
+        background: #fed7aa;
+        color: #c2410c;
+    }
+
+    .avatar-4 {
+        background: #ccfbf1;
+        color: #0f766e;
+    }
+
+    .avatar-5 {
+        background: #ede9fe;
+        color: #6d28d9;
+    }
+
+    .event-title-text {
+        font-weight: 950;
+        color: var(--admin-text);
+    }
+
+    .category-badge,
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 950;
+        white-space: nowrap;
+    }
+
+    .category-workshop {
+        background: #eeeaff;
+        color: #6f4ff2;
+    }
+
+    .category-technology {
+        background: #dbeafe;
+        color: #0d6efd;
+    }
+
+    .category-sports {
+        background: #fff3d0;
+        color: #d89a00;
+    }
+
+    .category-social {
+        background: #ffe7ef;
+        color: #db2777;
+    }
+
+    .category-seminar {
+        background: #dbeafe;
+        color: #0d6efd;
+    }
+
+    .category-default {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .status-open {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .status-full {
+        background: #ffe4e6;
+        color: #dc2626;
+    }
+
+    .status-limited {
+        background: #fff7d6;
+        color: #a16207;
+    }
+
+    .status-closed {
+        background: #ffe4e6;
+        color: #dc2626;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        margin-right: 8px;
+    }
+
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .action-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        text-decoration: none;
+        transition: 0.2s ease;
+        border: 1px solid;
+        background: white;
+    }
+
+
+    .view-btn {
+        color: #6f4ff2;
+        border-color: #c4b5fd;
+    }
+
+    .view-btn:hover {
+        color: white;
+        background: #6f4ff2;
+        border-color: #6f4ff2;
+    }
+
+    .edit-btn {
+        color: #0d6efd;
+        border-color: #93c5fd;
+    }
+
+    .edit-btn:hover {
+        color: white;
+        background: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .delete-btn {
+        color: #ef4444;
+        border-color: #fecdd3;
+    }
+
+    .delete-btn:hover {
+        color: white;
+        background: #ef4444;
+        border-color: #ef4444;
+    }
+
+    .table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 20px 0;
+        color: var(--admin-muted);
+        font-size: 14px;
+    }
+
+    .pagination-area {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .page-buttons {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-button,
+    .page-current {
+        min-width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        border: 1px solid var(--admin-border);
+        background: white;
+        color: #475569;
+        display: grid;
+        place-items: center;
+        text-decoration: none;
+        font-weight: 900;
+    }
+
+    .page-current {
+        background: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+    .rows-select {
+        width: 100px;
+        height: 42px;
+        border-radius: 8px;
+        border: 1px solid var(--admin-border);
+        background: white;
+        padding: 0 12px;
+        font-weight: 800;
+        color: var(--admin-text);
+    }
+
+    .empty-admin {
+        padding: 48px 18px;
+        text-align: center;
+        color: var(--admin-muted);
+    }
+
+    .hidden-row {
+        display: none !important;
+    }
+
+    @media (max-width: 1300px) {
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .filter-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .management-header {
+            flex-direction: column;
+        }
+
+        .summary-grid,
+        .filter-row {
+            grid-template-columns: 1fr;
+        }
+
+        .event-table-panel {
+            padding: 18px;
+        }
+
+        .table-box {
+            overflow-x: auto;
+        }
+
+        .table-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="event-management-wrapper">
+
+    <div class="management-header">
+        <div class="management-title">
+            <h1>Admin Event Management</h1>
+            <p>Create, update and manage all campus events in one place.</p>
+        </div>
+
+        <a href="/admin-events/add/" class="add-event-btn">
+            <i class="bi bi-plus-lg"></i>
+            Add New Event
+        </a>
+    </div>
+
+    <section class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-icon icon-purple">
+                <i class="bi bi-calendar2-event"></i>
+            </div>
+            <div>
+                <div class="summary-label">Total Events</div>
+                <div class="summary-number">
+                    {% if total_events is not None %}{{ total_events }}{% else %}{{ events|length }}{% endif %}
+                </div>
+                <p class="summary-sub">All registered events</p>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-icon icon-green">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div>
+                <div class="summary-label">Open Events</div>
+                <div class="summary-number" id="openEventsCount">{{ open_events|default:"0" }}</div>
+                <p class="summary-sub">Currently open</p>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-icon icon-red">
+                <i class="bi bi-ticket-perforated"></i>
+            </div>
+            <div>
+                <div class="summary-label">Upcoming Events</div>
+                <div class="summary-number">{{ upcoming_events|default:events|length }}</div>
+                <p class="summary-sub">In the coming 30 days</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="event-table-panel">
+
+        <div class="filter-row">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="eventSearch" class="filter-control" placeholder="Search events by name or venue...">
+            </div>
+
+            <select id="categoryFilter" class="filter-control">
+                <option value="">All Categories</option>
+                <option value="workshop">Workshop</option>
+                <option value="seminar">Seminar</option>
+                <option value="social">Social</option>
+                <option value="sports">Sports & Fitness</option>
+                <option value="technology">Technology</option>
+                <option value="arts">Arts</option>
+            </select>
+
+            <select id="statusFilter" class="filter-control">
+                <option value="">All Status</option>
+                <option value="open">Open</option>
+                <option value="full">Full</option>
+                <option value="closed">Closed</option>
+            </select>
+
+            <input type="date" id="dateFilter" class="filter-control">
+
+            <button type="button" id="resetFilters" class="reset-btn">
+                <i class="bi bi-arrow-clockwise"></i>
+                Reset
+            </button>
+
+            <button type="button" id="applyFilters" class="filter-icon-btn">
+                <i class="bi bi-sliders"></i>
+            </button>
+        </div>
+
+        <div class="table-box">
+            <table class="event-table">
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Category</th>
+                        <th>Date <i class="bi bi-chevron-expand ms-1"></i></th>
+                        <th>Time</th>
+                        <th>Venue</th>
+                        <th>Status</th>
+                        <th>Max Seats</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="eventTableBody">
+                    {% if events %}
+                        {% for event in events %}
+                            <tr class="event-row"
+                                data-title="{{ event.title|lower }}"
+                                data-venue="{{ event.venue|lower }}"
+                                data-category="{{ event.category|lower }}"
+                                data-date="{{ event.event_date|date:'Y-m-d' }}"
+                                data-status="{% if event.status == 'Closed' or event.status == 'closed' %}closed{% elif event.availability_class == 'full' %}full{% else %}open{% endif %}">
+
+                                <td>
+                                    <div class="event-name-cell">
+                                        <div class="event-avatar avatar-{{ forloop.counter }}">
+                                            {{ event.title|slice:":2"|upper }}
+                                        </div>
+                                        <div class="event-title-text">{{ event.title }}</div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="category-badge
+                                        {% if event.category == 'Workshop' %}category-workshop
+                                        {% elif event.category == 'Technology' or event.category == 'Technology & Innovation' %}category-technology
+                                        {% elif event.category == 'Sports' or event.category == 'Sports & Fitness' %}category-sports
+                                        {% elif event.category == 'Social' %}category-social
+                                        {% elif event.category == 'Seminar' %}category-seminar
+                                        {% else %}category-default{% endif %}">
+                                        {{ event.category }}
+                                    </span>
+                                </td>
+
+                                <td>{{ event.event_date|date:"M d, Y" }}</td>
+                                <td>{{ event.event_time|time:"g:i A" }}</td>
+                                <td>{{ event.venue }}</td>
+
+                                <td>
+                                    {% if event.status == 'Closed' or event.status == 'closed' %}
+                                        <span class="status-badge status-closed">
+                                            <span class="status-dot"></span>
+                                            Closed
+                                        </span>
+                                    {% elif event.availability_class == 'full' %}
+                                        <span class="status-badge status-full">
+                                            <span class="status-dot"></span>
+                                            Full
+                                        </span>
+                                    {% elif event.availability_class == 'limited' %}
+                                        <span class="status-badge status-limited">
+                                            <span class="status-dot"></span>
+                                            Limited
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge status-open">
+                                            <span class="status-dot"></span>
+                                            Open
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ event.max_participants }}</td>
+
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="{% url 'admin_event_detail' event.id %}" class="action-btn view-btn" title="View Event Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <a href="/admin-events/{{ event.id }}/edit/" class="action-btn edit-btn" title="Edit Event">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        <a href="/admin-events/{{ event.id }}/delete/" class="action-btn delete-btn" title="Delete Event">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8">
+                                <div class="empty-admin">
+                                    <i class="bi bi-calendar-x fs-2 d-block mb-2"></i>
+                                    No events available yet.
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <span id="eventCountText">
+                Showing 1 to
+                {% if events %}{{ events|length }}{% else %}0{% endif %}
+                of
+                {% if total_events is not None %}{{ total_events }}{% else %}{{ events|length }}{% endif %}
+                events
+            </span>
+
+            <div class="pagination-area">
+                <div class="page-buttons">
+                    <span class="page-button">
+                        <i class="bi bi-chevron-left"></i>
+                    </span>
+
+                    <span class="page-current">1</span>
+
+                    <span class="page-button">
+                        <i class="bi bi-chevron-right"></i>
+                    </span>
+                </div>
+
+                <select class="rows-select">
+                    <option>10 / page</option>
+                    <option>25 / page</option>
+                    <option>50 / page</option>
+                </select>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const searchInput = document.getElementById("eventSearch");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const statusFilter = document.getElementById("statusFilter");
+    const dateFilter = document.getElementById("dateFilter");
+    const applyFilters = document.getElementById("applyFilters");
+    const resetFilters = document.getElementById("resetFilters");
+    const rows = document.querySelectorAll(".event-row");
+    const countText = document.getElementById("eventCountText");
+
+    function normaliseCategory(category) {
+        category = category.toLowerCase();
+
+        if (category.includes("technology")) return "technology";
+        if (category.includes("sports")) return "sports";
+        if (category.includes("workshop")) return "workshop";
+        if (category.includes("seminar")) return "seminar";
+        if (category.includes("social")) return "social";
+        if (category.includes("arts")) return "arts";
+
+        return category;
+    }
+
+    function filterEvents() {
+        const searchValue = searchInput.value.trim().toLowerCase();
+        const categoryValue = categoryFilter.value.trim().toLowerCase();
+        const statusValue = statusFilter.value.trim().toLowerCase();
+        const dateValue = dateFilter.value.trim();
+
+        let visibleCount = 0;
+        let openCount = 0;
+
+        rows.forEach(row => {
+            const title = row.dataset.title || "";
+            const venue = row.dataset.venue || "";
+            const category = normaliseCategory(row.dataset.category || "");
+            const status = row.dataset.status || "";
+            const date = row.dataset.date || "";
+
+            const matchSearch = !searchValue || title.includes(searchValue) || venue.includes(searchValue);
+            const matchCategory = !categoryValue || category === categoryValue;
+            const matchStatus = !statusValue || status === statusValue;
+            const matchDate = !dateValue || date === dateValue;
+
+            if (matchSearch && matchCategory && matchStatus && matchDate) {
+                row.classList.remove("hidden-row");
+                visibleCount++;
+
+                if (status === "open") {
+                    openCount++;
+                }
+            } else {
+                row.classList.add("hidden-row");
+            }
+        });
+
+        countText.textContent = `Showing ${visibleCount} of ${rows.length} events`;
+        document.getElementById("openEventsCount").textContent = openCount;
+    }
+
+    searchInput.addEventListener("input", filterEvents);
+    categoryFilter.addEventListener("change", filterEvents);
+    statusFilter.addEventListener("change", filterEvents);
+    dateFilter.addEventListener("change", filterEvents);
+    applyFilters.addEventListener("click", filterEvents);
+
+    resetFilters.addEventListener("click", function () {
+        searchInput.value = "";
+        categoryFilter.value = "";
+        statusFilter.value = "";
+        dateFilter.value = "";
+        filterEvents();
+    });
+    filterEvents();
+</script>
+{% endblock %}

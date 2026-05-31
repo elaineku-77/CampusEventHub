@@ -1,0 +1,440 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | CampusEventHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .event-form-wrapper {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 28px 0 34px;
+    }
+
+    .event-form-card {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
+        background: #ffffff;
+        border: 1px solid var(--admin-border);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 18px 48px rgba(21, 26, 53, 0.10);
+    }
+
+    .event-form-left {
+        background:
+            radial-gradient(circle at 82% 25%, rgba(111,79,242,0.12), transparent 22%),
+            linear-gradient(135deg, #fbfaff, #f4f1ff);
+        padding: 54px 42px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .event-form-left h1 {
+        color: var(--admin-text);
+        font-size: 28px;
+        font-weight: 950;
+        letter-spacing: -0.5px;
+        margin-bottom: 14px;
+    }
+
+    .event-form-left p {
+        color: var(--admin-muted);
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 34px;
+    }
+
+    .illustration {
+        width: 100%;
+        max-width: 250px;
+        margin: 14px auto 34px;
+        display: block;
+    }
+
+    .tip-card {
+        background: rgba(255,255,255,0.88);
+        border: 1px solid var(--admin-border);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 12px 28px rgba(21, 26, 53, 0.08);
+    }
+
+    .tip-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--admin-purple);
+        font-weight: 950;
+        margin-bottom: 14px;
+    }
+
+    .tip-title i {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #eeeaff;
+    }
+
+    .tip-card p {
+        margin: 0;
+        color: #4b5563;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .event-form-right {
+        padding: 34px 44px 30px;
+    }
+
+    .modern-form label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--admin-text);
+        font-size: 15px;
+        font-weight: 950;
+        margin-bottom: 10px;
+    }
+
+    .modern-form label i {
+        color: var(--admin-purple);
+        font-size: 20px;
+        width: 22px;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .modern-form input[type="text"],
+    .modern-form input[type="number"],
+    .modern-form input[type="date"],
+    .modern-form input[type="time"],
+    .modern-form input[type="file"],
+    .modern-form textarea,
+    .modern-form select {
+        width: 100%;
+        border: 1px solid #dfe3f2;
+        background: #ffffff;
+        color: var(--admin-text);
+        border-radius: 9px;
+        padding: 12px 16px;
+        font-size: 15px;
+        outline: none;
+        transition: 0.18s ease;
+    }
+
+    .modern-form input[type="text"],
+    .modern-form input[type="number"],
+    .modern-form input[type="date"],
+    .modern-form input[type="time"],
+    .modern-form select {
+        height: 48px;
+    }
+
+    .modern-form textarea {
+        min-height: 92px;
+        resize: vertical;
+    }
+
+    .modern-form input:focus,
+    .modern-form textarea:focus,
+    .modern-form select:focus {
+        border-color: var(--admin-purple);
+        box-shadow: 0 0 0 4px rgba(111,79,242,0.12);
+    }
+
+    .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        margin-top: 10px;
+    }
+
+    .back-btn,
+    .save-btn {
+        min-height: 48px;
+        border-radius: 9px;
+        text-decoration: none;
+        border: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-weight: 950;
+        padding: 0 26px;
+        transition: 0.2s ease;
+    }
+
+    .back-btn {
+        background: #f1f2f6;
+        color: #374151;
+    }
+
+    .back-btn:hover {
+        color: #111827;
+        background: #e5e7eb;
+    }
+
+    .save-btn {
+        background: linear-gradient(135deg, var(--admin-purple), #8e7cff);
+        color: white;
+        box-shadow: 0 14px 28px rgba(111,79,242,0.24);
+        min-width: 160px;
+    }
+
+    .save-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 38px rgba(111,79,242,0.32);
+    }
+
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 8px 0 0;
+        color: #dc2626;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .non-field-error {
+        background: #fff0f1;
+        border: 1px solid #ffc7cc;
+        color: #dc2626;
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 20px;
+        font-weight: 850;
+        font-size: 14px;
+    }
+
+    @media (max-width: 992px) {
+        .event-form-card {
+            grid-template-columns: 1fr;
+        }
+
+        .event-form-left {
+            padding: 36px 30px;
+        }
+
+        .illustration {
+            max-width: 210px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .event-form-right {
+            padding: 28px 22px;
+        }
+
+        .two-col {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .back-btn,
+        .save-btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="event-form-wrapper">
+    <div class="event-form-card">
+
+        <aside class="event-form-left">
+            <h1>{{ title }}</h1>
+
+            <p>
+                Fill in the details below to create or update an event.
+            </p>
+
+            <svg class="illustration" viewBox="0 0 360 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="180" cy="246" rx="142" ry="24" fill="#EDE9FE"/>
+                <path d="M119 86C119 75 128 66 139 66H246C257 66 266 75 266 86V225H119V86Z" fill="#7C5CFF"/>
+                <path d="M132 97H253V225H132V97Z" fill="#F8FAFC"/>
+                <path d="M151 121H181V151H151V121Z" fill="#EDE9FE"/>
+                <path d="M197 121H227V151H197V121Z" fill="#EDE9FE"/>
+                <path d="M151 168H181V198H151V168Z" fill="#EDE9FE"/>
+                <path d="M197 168H227V198H197V168Z" fill="#EDE9FE"/>
+                <path d="M151 66V43" stroke="#111827" stroke-width="8" stroke-linecap="round"/>
+                <path d="M197 66V43" stroke="#111827" stroke-width="8" stroke-linecap="round"/>
+                <path d="M240 66V43" stroke="#111827" stroke-width="8" stroke-linecap="round"/>
+                <circle cx="251" cy="139" r="23" fill="#6F4FF2"/>
+                <path d="M240 139L249 148L264 130" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="104" cy="199" r="45" fill="#FFD45A"/>
+                <circle cx="104" cy="199" r="35" fill="#FFF8D8"/>
+                <path d="M104 176V201L122 211" stroke="#111827" stroke-width="6" stroke-linecap="round"/>
+                <path d="M79 160L68 149" stroke="#111827" stroke-width="6" stroke-linecap="round"/>
+                <path d="M129 160L140 149" stroke="#111827" stroke-width="6" stroke-linecap="round"/>
+                <path d="M56 155C44 137 30 130 16 135C18 158 32 172 56 177V155Z" fill="#4DD4A1"/>
+                <path d="M62 174C49 159 34 155 20 163C28 185 45 196 67 194L62 174Z" fill="#3CBF8C"/>
+                <circle cx="94" cy="54" r="7" fill="#6F4FF2"/>
+                <circle cx="60" cy="97" r="8" fill="#FFD45A"/>
+                <circle cx="304" cy="122" r="7" fill="#FFD45A"/>
+                <circle cx="68" cy="248" r="6" fill="#6F4FF2"/>
+                <path d="M58 108L64 121L77 127L64 133L58 146L52 133L39 127L52 121L58 108Z" fill="#FFD45A"/>
+                <path d="M311 187L316 197L326 202L316 207L311 217L306 207L296 202L306 197L311 187Z" fill="#FFD45A"/>
+            </svg>
+
+            <div class="tip-card">
+                <div class="tip-title">
+                    <i class="bi bi-info-circle"></i>
+                    Quick Tips
+                </div>
+
+                <p>
+                    Provide clear and accurate details to help participants find and register for your event easily.
+                </p>
+            </div>
+        </aside>
+
+        <main class="event-form-right">
+            {% if form.non_field_errors %}
+                <div class="non-field-error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="modern-form" novalidate>
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">
+                        <i class="bi bi-pencil"></i>
+                        Event Title
+                    </label>
+                    {{ form.title }}
+                    {{ form.title.errors }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">
+                        <i class="bi bi-card-text"></i>
+                        Description
+                    </label>
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">
+                        <i class="bi bi-tag"></i>
+                        Category
+                    </label>
+                    {{ form.category }}
+                    {{ form.category.errors }}
+                </div>
+
+                <div class="two-col">
+                    <div class="form-group">
+                        <label for="{{ form.event_date.id_for_label }}">
+                            <i class="bi bi-calendar-event"></i>
+                            Event Date
+                        </label>
+                        {{ form.event_date }}
+                        {{ form.event_date.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.event_time.id_for_label }}">
+                            <i class="bi bi-clock"></i>
+                            Event Time
+                        </label>
+                        {{ form.event_time }}
+                        {{ form.event_time.errors }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.venue.id_for_label }}">
+                        <i class="bi bi-geo-alt"></i>
+                        Venue
+                    </label>
+                    {{ form.venue }}
+                    {{ form.venue.errors }}
+                </div>
+
+                <div class="two-col">
+                    <div class="form-group">
+                        <label for="{{ form.max_participants.id_for_label }}">
+                            <i class="bi bi-people"></i>
+                            Maximum Participants
+                        </label>
+                        {{ form.max_participants }}
+                        {{ form.max_participants.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.status.id_for_label }}">
+                            <i class="bi bi-check-circle"></i>
+                            Status
+                        </label>
+                        {{ form.status }}
+                        {{ form.status.errors }}
+                    </div>
+                </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.is_highlighted.id_for_label }}">
+                            <i class="bi bi-star"></i>
+                            Highlight Event
+                        </label>
+
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            {{ form.is_highlighted }}
+                            <span style="font-size:14px;color:#6b7280;">
+                                Show this event in the Highlighted Events section on homepage.
+                            </span>
+                        </div>
+
+                        {{ form.is_highlighted.errors }}
+                    </div>
+
+                <div class="form-group">
+                    <label for="{{ form.event_image.id_for_label }}">
+                        <i class="bi bi-image"></i>
+                        Event Image
+                    </label>
+                    {{ form.event_image }}
+                    {{ form.event_image.errors }}
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'admin_event_list' %}" class="back-btn">
+                        <i class="bi bi-arrow-left"></i>
+                        Back
+                    </a>
+
+                    <button class="save-btn" type="submit">
+                        <i class="bi bi-floppy"></i>
+                        Save Event
+                    </button>
+                </div>
+
+            </form>
+        </main>
+
+    </div>
+</div>
+
+{% endblock %}
