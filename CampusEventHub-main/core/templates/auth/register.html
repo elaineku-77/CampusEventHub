@@ -1,0 +1,702 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register | CampusEventHub{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+<style>
+    :root {
+        --reg-navy: #10143d;
+        --reg-navy-2: #25275d;
+        --reg-gold: #f5c542;
+        --reg-gold-soft: #ffe28a;
+        --reg-purple: #7f6df2;
+        --reg-text: #1f2433;
+        --reg-muted: #6b7280;
+        --reg-border: #e5e7f2;
+        --reg-input: #fbfcff;
+    }
+
+    body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        background:
+            radial-gradient(circle at 6% 82%, rgba(245,197,66,0.16), transparent 17%),
+            radial-gradient(circle at 95% 20%, rgba(127,109,242,0.14), transparent 20%),
+            linear-gradient(135deg, #fbfbff 0%, #eef1ff 100%);
+    }
+
+    .register-page {
+        min-height: calc(100vh - 76px);
+        padding: 70px 0 80px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-page::before {
+        content: "";
+        position: absolute;
+        left: -70px;
+        bottom: 95px;
+        width: 210px;
+        height: 210px;
+        background: rgba(245,197,66,0.13);
+        border-radius: 50%;
+        animation: floatShape 7s ease-in-out infinite;
+    }
+
+    .register-page::after {
+        content: "";
+        position: absolute;
+        right: -100px;
+        top: 95px;
+        width: 260px;
+        height: 260px;
+        background: rgba(127,109,242,0.12);
+        border-radius: 50%;
+        animation: floatShape 8s ease-in-out infinite;
+    }
+
+    @keyframes floatShape {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-18px);
+        }
+    }
+
+    .register-shell {
+        position: relative;
+        z-index: 2;
+        max-width: 1180px;
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+
+    .register-box {
+        border-radius: 30px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 24px 70px rgba(16, 20, 61, 0.13);
+        min-height: 720px;
+    }
+
+    .register-left {
+        min-height: 720px;
+        padding: 50px 44px;
+        background:
+            radial-gradient(circle at 83% 78%, rgba(245,197,66,0.20), transparent 24%),
+            linear-gradient(135deg, rgba(16,20,61,0.96), rgba(37,39,93,0.92)),
+            url("{% static 'images/um.png' %}") center/cover no-repeat;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-left::before {
+        content: "";
+        position: absolute;
+        right: -74px;
+        bottom: -80px;
+        width: 230px;
+        height: 230px;
+        border-radius: 50%;
+        border: 34px solid rgba(245,197,66,0.14);
+    }
+
+    .register-left::after {
+        content: "";
+        position: absolute;
+        left: -80px;
+        bottom: -70px;
+        width: 210px;
+        height: 210px;
+        background: rgba(127,109,242,0.18);
+        border-radius: 50%;
+        filter: blur(2px);
+    }
+
+    .left-content {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .left-top-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--reg-gold), var(--reg-gold-soft));
+        color: #111;
+        display: grid;
+        place-items: center;
+        font-size: 26px;
+        margin-bottom: 34px;
+        box-shadow: 0 14px 30px rgba(245,197,66,0.25);
+        animation: iconFloat 3.4s ease-in-out infinite;
+    }
+
+    @keyframes iconFloat {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+
+    .register-left h1 {
+        font-size: 54px;
+        line-height: 1.03;
+        font-weight: 900;
+        letter-spacing: -1px;
+        margin-bottom: 18px;
+    }
+
+    .register-left h1 span {
+        color: var(--reg-gold);
+    }
+
+    .yellow-line {
+        width: 56px;
+        height: 5px;
+        background: var(--reg-gold);
+        border-radius: 999px;
+        margin-bottom: 22px;
+    }
+
+    .register-left h3 {
+        font-size: 27px;
+        font-weight: 900;
+        line-height: 1.22;
+        margin-bottom: 18px;
+    }
+
+    .register-left p {
+        color: rgba(255,255,255,0.83);
+        font-size: 16px;
+        line-height: 1.7;
+        max-width: 410px;
+    }
+
+    .campus-photo-card {
+        margin-top: auto;
+        border-radius: 24px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+        border: 1px solid rgba(255,255,255,0.18);
+        height: 240px;
+        background: rgba(255,255,255,0.08);
+    }
+
+    .campus-photo-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        transform: scale(1.02);
+    }
+
+    .campus-photo-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            180deg,
+            rgba(16,20,61,0.05),
+            rgba(16,20,61,0.22)
+        );
+    }
+
+    .um-badge {
+        position: absolute;
+        right: 20px;
+        bottom: 18px;
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        background: white;
+        display: grid;
+        place-items: center;
+        color: var(--reg-navy);
+        font-size: 23px;
+        font-weight: 900;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+        border: 5px solid rgba(255,255,255,0.9);
+        z-index: 3;
+    }
+
+    .register-right {
+        min-height: 720px;
+        padding: 46px 58px;
+        background: rgba(255,255,255,0.96);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .register-form-inner {
+        width: 100%;
+        max-width: 560px;
+    }
+
+    .register-title {
+        font-size: 40px;
+        font-weight: 900;
+        color: var(--reg-text);
+        letter-spacing: -0.8px;
+        margin-bottom: 8px;
+    }
+
+    .title-underline {
+        width: 44px;
+        height: 4px;
+        background: #b9adff;
+        border-radius: 999px;
+        margin-bottom: 26px;
+    }
+
+    .register-form label {
+        font-size: 13px;
+        font-weight: 900;
+        color: #2b3045;
+        margin-bottom: 8px;
+    }
+
+    .input-wrap {
+        position: relative;
+    }
+
+    .input-wrap i {
+        position: absolute;
+        left: 17px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #596075;
+        font-size: 17px;
+        z-index: 2;
+    }
+
+    .input-wrap input,
+    .register-form input[type="email"],
+    .register-form input[type="password"],
+    .register-form input[type="text"],
+    .register-form input[type="tel"] {
+        width: 100%;
+        height: 50px;
+        border: 1px solid var(--reg-border);
+        border-radius: 12px;
+        background: var(--reg-input);
+        padding: 12px 15px 12px 48px;
+        color: var(--reg-text);
+        font-size: 14px;
+        outline: none;
+        transition: 0.18s ease;
+    }
+
+    .input-wrap input:focus,
+    .register-form input[type="email"]:focus,
+    .register-form input[type="password"]:focus,
+    .register-form input[type="text"]:focus,
+    .register-form input[type="tel"]:focus {
+        border-color: var(--reg-purple);
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(127,109,242,0.12);
+    }
+
+    .upload-wrap {
+        border: 1.5px dashed #cfd3e6;
+        border-radius: 14px;
+        min-height: 76px;
+        background: #fbfcff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 14px 18px;
+        position: relative;
+        transition: 0.18s ease;
+    }
+
+    .upload-wrap:hover {
+        border-color: var(--reg-purple);
+        background: #ffffff;
+    }
+
+    .upload-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: #eeeaff;
+        color: var(--reg-purple);
+        display: grid;
+        place-items: center;
+        font-size: 22px;
+    }
+
+    .upload-text strong {
+        display: block;
+        font-size: 13px;
+        color: var(--reg-purple);
+        font-weight: 900;
+    }
+
+    .upload-text span {
+        font-size: 12px;
+        color: var(--reg-muted);
+    }
+
+    .upload-wrap input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .password-help-box {
+        background: linear-gradient(135deg, #f4f1ff, #f7f8ff);
+        border-radius: 14px;
+        padding: 14px 18px;
+        display: grid;
+        grid-template-columns: 46px 1fr;
+        gap: 12px;
+        align-items: center;
+        margin-top: 8px;
+        border: 1px solid #ebe8ff;
+    }
+
+    .password-help-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #e7e1ff;
+        color: var(--reg-purple);
+        font-size: 20px;
+    }
+
+    .password-help-box strong {
+        font-size: 12px;
+        color: #2b3045;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .password-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px 16px;
+        font-size: 11px;
+        color: #606779;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .password-list li i {
+        color: var(--reg-purple);
+        margin-right: 5px;
+    }
+
+    .register-submit {
+        width: 100%;
+        height: 54px;
+        border: 0;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--reg-gold), var(--reg-gold-soft));
+        color: #111;
+        font-weight: 900;
+        font-size: 16px;
+        margin-top: 18px;
+        box-shadow: 0 14px 28px rgba(245,197,66,0.24);
+        transition: 0.2s ease;
+    }
+
+    .register-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 34px rgba(245,197,66,0.33);
+    }
+
+    .divider {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 16px;
+        margin: 22px 0;
+        color: #8b91a3;
+        font-size: 13px;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: "";
+        height: 1px;
+        background: var(--reg-border);
+    }
+
+    .login-link-text {
+        text-align: center;
+        color: var(--reg-muted);
+        font-size: 14px;
+    }
+
+    .login-link-text a {
+        color: var(--reg-purple);
+        font-weight: 900;
+        text-decoration: none;
+    }
+
+    .errorlist {
+        list-style: none;
+        margin: 5px 0 0;
+        padding: 0;
+        color: #c92d42;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .non-field-error {
+        border-radius: 14px;
+        background: #ffe1e4;
+        color: #b42335;
+        padding: 10px 12px;
+        font-weight: 700;
+        font-size: 13px;
+        margin-bottom: 14px;
+    }
+
+    @media (max-width: 991px) {
+        .register-page {
+            padding: 45px 0 60px;
+        }
+
+        .register-left,
+        .register-right,
+        .register-box {
+            min-height: auto;
+        }
+
+        .register-left,
+        .register-right {
+            padding: 32px;
+        }
+
+        .register-left h1 {
+            font-size: 42px;
+        }
+
+        .campus-photo-card {
+            height: 210px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .register-box {
+            border-radius: 24px;
+        }
+
+        .register-left,
+        .register-right {
+            padding: 24px;
+        }
+
+        .register-left h1 {
+            font-size: 34px;
+        }
+
+        .password-list {
+            grid-template-columns: 1fr;
+        }
+
+        .campus-photo-card {
+            height: 190px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="register-page">
+    <div class="container register-shell">
+        <div class="row g-0 register-box">
+
+            <div class="col-lg-5">
+                <div class="register-left">
+                    <div class="left-content">
+                        <div class="left-top-icon">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+
+                        <h1>Discover <span>UM</span> events.</h1>
+
+                        <div class="yellow-line"></div>
+
+                        <h3>Sign up for more events today!</h3>
+
+                        <p>
+                            Join a vibrant community. Explore exciting events, connect with peers,
+                            and make the most of your university life.
+                        </p>
+
+                        <div class="campus-photo-card">
+                            <img src="{% static 'images/um.png' %}" alt="Universiti Malaya Campus">
+                            <div class="um-badge">
+                                I <i class="bi bi-heart-fill text-danger mx-1"></i> UM
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="register-right">
+                    <div class="register-form-inner">
+
+                        <h2 class="register-title">Sign Up</h2>
+                        <div class="title-underline"></div>
+
+                        {% if form.non_field_errors %}
+                            <div class="non-field-error">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <form method="post" enctype="multipart/form-data" class="register-form" novalidate>
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="{{ form.full_name.id_for_label }}">Full Name</label>
+                                <div class="input-wrap">
+                                    <i class="bi bi-person"></i>
+                                    {{ form.full_name }}
+                                </div>
+                                {% if form.full_name.errors %}
+                                    {{ form.full_name.errors }}
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.email.id_for_label }}">E-mail Address</label>
+                                <div class="input-wrap">
+                                    <i class="bi bi-envelope"></i>
+                                    {{ form.email }}
+                                </div>
+                                {% if form.email.errors %}
+                                    {{ form.email.errors }}
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                                <div class="input-wrap">
+                                    <i class="bi bi-telephone"></i>
+                                    {{ form.phone_number }}
+                                </div>
+                                {% if form.phone_number.errors %}
+                                    {{ form.phone_number.errors }}
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="{{ form.profile_picture.id_for_label }}">Profile Picture</label>
+                                <div class="upload-wrap">
+                                    <div class="upload-icon">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                    <div class="upload-text">
+                                        <strong>Click to upload</strong>
+                                        <span>PNG, JPG up to 5MB</span>
+                                    </div>
+                                    {{ form.profile_picture }}
+                                </div>
+                                {% if form.profile_picture.errors %}
+                                    {{ form.profile_picture.errors }}
+                                {% endif %}
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.password.id_for_label }}">Password</label>
+                                    <div class="input-wrap">
+                                        <i class="bi bi-lock"></i>
+                                        {{ form.password }}
+                                    </div>
+                                    {% if form.password.errors %}
+                                        {{ form.password.errors }}
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="{{ form.confirm_password.id_for_label }}">Confirm Password</label>
+                                    <div class="input-wrap">
+                                        <i class="bi bi-lock-fill"></i>
+                                        {{ form.confirm_password }}
+                                    </div>
+                                    {% if form.confirm_password.errors %}
+                                        {{ form.confirm_password.errors }}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="password-help-box">
+                                <div class="password-help-icon">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Password must contain:</strong>
+                                    <ul class="password-list">
+                                        <li><i class="bi bi-check2"></i>At least 8 characters</li>
+                                       <!-- <li><i class="bi bi-check2"></i>An uppercase letter</li>-->
+                                       <!-- <li><i class="bi bi-check2"></i>A number (0-9)</li>-->
+                                        <!--<li><i class="bi bi-check2"></i>A special character</li>-->
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="register-submit">
+                                Create Account
+                            </button>
+                        </form>
+
+                        <div class="divider">or</div>
+
+                        <div class="login-link-text">
+                            Already have an account?
+                            <a href="{% url 'login' %}">Log In</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+    if (window.AOS) {
+        AOS.init({
+            duration: 700,
+            once: true,
+            offset: 50
+        });
+    }
+</script>
+{% endblock %}
